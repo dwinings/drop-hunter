@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DropHunter</title>
+  <script>
+      window.DropHunter = {}
+      DropHunter.monsters = <%== monsters_json %>
+      DropHunter.breaks   = <%== breaks_json   %>
+  </script>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+
+</head>
+<body>
+
+<%= render 'layouts/nav' %>
+
+<%= yield %>
+
+<%= stylesheet_link_tag 'bootstrap-material', media: 'all', 'data-turbo-links-track' => true %>
+</body>
+</html>

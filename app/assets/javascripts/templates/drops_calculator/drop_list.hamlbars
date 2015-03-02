@@ -1,0 +1,24 @@
+= hb 'each parts' do
+  .part-group.col-sm-6
+    %h4.sub-heading
+      %label
+        %input.drop-group-boxes{type: 'checkbox', name: hb('name')}
+        = hb 'name'
+    %table.table.table-hover.table-striped.container.fixed.drop-table
+      %thead
+        %tr
+          %th
+            \#
+          %th
+            Item
+          %th
+            Drop Chance
+      %tbody
+        = hb 'each drops' do
+          %tr
+            %td
+              %input.number-input.col-md-1.form-control{type: 'number', min: '0', default: 0, name: 'number', placeholder: "0"}
+            %td
+              = hb 'name'
+            %td
+              = hb 'formatPercent percentage'
