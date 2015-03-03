@@ -4,8 +4,10 @@ module JsonHelper
   end
 
   def breaks_json
-    Monster.all.reduce({}) do |dater, mon|
-      dater[mon.id] = mon.breaks.map(&:as_json)
+    breaks = Break.order(:monster_id)
+    breaks.reduce({}) do |dater, brk|
+      dater[brk.monster_id] = [] unless dater[brk.monster_id]
+      dater[brk.monster_id] << brk.as_json
       dater
     end.to_json
   end
