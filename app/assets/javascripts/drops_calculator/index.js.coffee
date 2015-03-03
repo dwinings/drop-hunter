@@ -37,9 +37,20 @@ updateDropsView = (monster_id) ->
     cbox.prop('checked', true) unless cbox.attr('name') == "Capture" || cbox.attr('name') == "Virus Reward"
     updateDropNumberInputs(e)
   )
+
+  $('.drop-expand-btn').on('click', (e) =>
+    expander = $('.part-group-expander', $(e.target).parents('.drop-data-container'))
+    if !expander.attr('expanded') || expander.attr('expanded') == 'false'
+      expanderHeight = expander.children().outerHeight()
+      expander.attr('expanded', true)
+    else
+      expanderHeight = 0
+      expander.attr('expanded', false)
+    expander.css('max-height', expanderHeight)
+  )
   $('.drop-group-boxes').on('change', (e) ->
     group = $(e.target).parents('.part-group')
-    updateDropNumberInputs(group)
+    #updateDropNumberInputs(group)
   )
 
 Handlebars.registerHelper("formatPercent", (f) ->
