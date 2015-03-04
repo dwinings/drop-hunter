@@ -1,5 +1,5 @@
 = hb 'each parts' do
-  .drop-data-container
+  %form#drop-selector-form.form-horizontal.drop-data-container
     %input.check-box{type: 'checkbox', name: hb('name')}
     %button.drop-expand-btn.btn.btn-default.btn-flat{type: 'button', aria: {label: 'Expand'}}
       = hb 'name'
@@ -19,4 +19,4 @@
               %td
                 = hb 'name'
               %td
-                = hb 'formatPercent percentage'
+                = hb 'formatPercent probability'

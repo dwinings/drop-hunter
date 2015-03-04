@@ -11,17 +11,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150228215408) do
+ActiveRecord::Schema.define(version: 20150304032316) do
 
   create_table "breaks", force: :cascade do |t|
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
     t.integer  "monster_id", limit: 4
     t.string   "name",       limit: 255
-    t.text     "drop_json",  limit: 65535
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   add_index "breaks", ["monster_id"], name: "index_breaks_on_monster_id", using: :btree
+
+  create_table "item_drop_instances", force: :cascade do |t|
+    t.integer "monster_id",  limit: 4
+    t.integer "break_id",    limit: 4
+    t.integer "item_id",     limit: 4
+    t.integer "quantity",    limit: 4
+    t.float   "probability", limit: 24
+  end
+
+  add_index "item_drop_instances", ["break_id"], name: "index_item_drop_instances_on_break_id", using: :btree
+  add_index "item_drop_instances", ["item_id"], name: "index_item_drop_instances_on_item_id", using: :btree
+  add_index "item_drop_instances", ["monster_id"], name: "index_item_drop_instances_on_monster_id", using: :btree
+
+  create_table "items", force: :cascade do |t|
+    t.integer  "rank_id",    limit: 4
+    t.string   "name",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "monsters", force: :cascade do |t|
     t.datetime "created_at",               null: false
