@@ -2,22 +2,16 @@ escapeRegExp = (str) ->
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
 
 monsterMatcher = (strs) ->
-  return (q, cb) ->
-    # an array that will be populated with substring matches
+  (query, callback) ->
     matches = [];
+    substrRegex = new RegExp(escapeRegExp(query), 'i')
 
-    # regex used to determine if a string contains the substring `q`
-    substrRegex = new RegExp(escapeRegExp(q), 'i')
-
-    # iterate through the pool of strings and for any string that
-    # contains the substring `q`, add it to the `matches` array
     $.each(strs, (i, str) ->
       if (substrRegex.test(str['name']))
-        # the typeahead jQuery plugin expects suggestions to a
-        # JavaScript object, refer to typeahead docs for more info
         matches.push(str)
     )
-    cb(matches)
+
+    callback(matches)
 
 updateDropNumberInputs = (e) ->
   checked = $('.drop-group-boxes', e).is(':checked')
