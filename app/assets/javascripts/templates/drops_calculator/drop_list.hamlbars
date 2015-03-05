@@ -1,22 +1,23 @@
-= hb 'each parts' do
-  %form#drop-selector-form.form-horizontal.drop-data-container
-    %input.check-box{type: 'checkbox', name: hb('name')}
-    %button.drop-expand-btn.btn.btn-default.btn-flat{type: 'button', aria: {label: 'Expand'}}
-      = hb 'name'
-      %span.glyphicon.glyphicon-plus{aria: {hidden: 'true'}}
-    .part-group-expander
-      %table.table.table-hover.table-striped.container.fixed.drop-table
-        %thead
-          %tr
-            %th
-              Item
-            %th
-              Drop Chance
-        %tbody
-          = hb 'each drops' do
+%form#drop-selector-form.form-horizontal
+  = hb 'each parts' do
+    .drop-data-container
+      %span.text-holder
+        %input.check-box{type: 'checkbox', name: hb('name')}
+        %label.drop-expand-btn{type: 'checkbox', for: hb('name'), aria: {label: 'Expand'}}
+          = hb 'name'
+      %span.glyphicon.glyphicon-triangle-right{aria: {hidden: 'true'}}
+      .part-group-expander
+        %table.table.table-hover.table-striped.container.fixed.drop-table
+          %thead
             %tr
-              // %input.number-input.col-md-1.form-control{type: 'number', min: '0', default: 0, name: 'number', placeholder: "0"}
-              %td
-                = hb 'name'
-              %td
-                = hb 'formatPercent probability'
+              %th
+                Item
+              %th
+                Drop Chance
+          %tbody
+            = hb 'each drops' do
+              %tr
+                %td
+                  = hb 'name'
+                %td
+                  = hb 'formatPercent probability'

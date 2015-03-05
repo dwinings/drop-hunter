@@ -66,15 +66,35 @@ table.fixed
     text-overflow: ellipsis
     white-space: nowrap
 
-.part-group-expander
-  max-height: 0px
-  overflow: hidden
-  transition: max-height 0.3s
-  -moz-transition: max-height 0.3s
-  -webkit-transition: max-height 0.3s
+.row
+  padding-bottom: 10px
 
-.drop-expand-btn.btn
-  padding-left: 0px
+#drop-list
+  .text-holder
+    overflow: hidden
+    width: 120px
+    display: inline-block
+    vertical-align: middle
+  .drop-data-container
+    margin-bottom: 10px
+  .part-group-expander
+    max-height: 0px
+    overflow: hidden
+    padding-left: 10px
+    +transition(max-height)
 
-.part-group-expander
-  padding-left: 10px
+  .drop-expand-btn
+    padding-left: 0px
+
+  .glyphicon-triangle-right
+    margin-left: 15px
+    transform: rotate(0deg)
+    -webkit-transform: rotate(0deg)
+    -ms-transform: rotate(0deg)
+    +transition(transform)
+    +transition(-ms-transform)
+    +transition(-webkit-transform)
+
+#btn-go
+  display: table
+  margin: 0px auto
