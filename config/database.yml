@@ -5,14 +5,16 @@
 #   gem 'sqlite3'
 #
 default: &default
-  adapter: mysql
+  adapter: postgresql
+  encoding: unicode
   pool: 5
   timeout: 5000
 
 development:
   <<: *default
-  username: root
+  username: wisp
   database: drop_hunter_development
+  password:
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
