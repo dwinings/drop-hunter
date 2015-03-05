@@ -20,11 +20,29 @@ updateDropNumberInputs = (e) ->
   else
     $('.number-input', e).attr('disabled', 'disabled')
 
+toggleDropTable = (e) ->
+  container = $(e.target).parents('.drop-data-container')
+  expander = $('.part-group-expander', container)
+  expanderIcon = $('.glyphicon-triangle-right', container)
+  if !expander.attr('expanded') || expander.attr('expanded') == 'false'
+    expanderHeight = expander.children().outerHeight()
+    transform = "rotate(90deg)"
+    expander.attr('expanded', true)
+  else
+    expanderHeight = 0
+    transform = "rotate(0deg)"
+    expander.attr('expanded', false)
+  expanderIcon.css("transform", transform)
+  expander.css('max-height', expanderHeight)
 
-updateDropsView = (monster_id) ->
+
+updateDropsView = (breakData) =>
+  @dropsViewLoaded = true
+  maybeEnableCalculateButton()
   template = HandlebarsTemplates["drops_calculator/drop_list"]
-  html = template({parts: DropHunter.breaks[monster_id]})
+  html = template(parts: breakData)
   $('#drop-list').html(html)
+  el = $('#drop-list')
 
   $('.part-group').each( (i, e) ->
     cbox = $('.drop-group-boxes', e)
@@ -32,24 +50,29 @@ updateDropsView = (monster_id) ->
     updateDropNumberInputs(e)
   )
 
-  $('.drop-expand-btn').on('click', (e) =>
-    expander = $('.part-group-expander', $(e.target).parents('.drop-data-container'))
-    if !expander.attr('expanded') || expander.attr('expanded') == 'false'
-      expanderHeight = expander.children().outerHeight()
-      expander.attr('expanded', true)
-    else
-      expanderHeight = 0
-      expander.attr('expanded', false)
-    expander.css('max-height', expanderHeight)
-  )
-  $('.drop-group-boxes').on('change', (e) ->
-    group = $(e.target).parents('.part-group')
-    #updateDropNumberInputs(group)
-  )
+  $('.drop-expand-btn',          el).on 'click', toggleDropTable
+  $('.glyphicon-triangle-right', el).on 'click', toggleDropTable
+
+
+updateItemsView = (itemData) ->
+  @itemsViewLoaded = true
+  maybeEnableCalculateButton()
+  template = HandlebarsTemplates['drops_calculator/item_list']
+  html = template(items: itemData)
+  $('#item-list').html(html)
 
 Handlebars.registerHelper("formatPercent", (f) ->
   (f * 100).toFixed(0).toString() + "%"
 )
+
+maybeEnableCalculateButton = ->
+  if @itemsViewLoaded and @dropsViewLoaded
+    enableCalculateButton()
+
+enableCalculateButton = ->
+  $('#btn-go').removeClass('disabled')
+disableCalculateButton = ->
+  $('#btn-go').addClass('disabled')
 
 $ ->
   $('#monster-selector .typeahead').typeahead(
@@ -68,6 +91,13 @@ $ ->
   $('.tt-hint').addClass('form-control')
 
   $('#monster-selector').bind('typeahead:selected', (obj, dater, name) =>
-    window.currentMonster = dater.id
-    updateDropsView(dater.id)
+    disableCalculateButton()
+    DropHunter.currentMonster = dater.id
+    $.ajax url: "/monsters/#{DropHunter.currentMonster}/breaks", success: (result) =>
+      DropHunter.currentBreakData = result
+      updateDropsView(result)
+
+    $.ajax url: "/monsters/#{DropHunter.currentMonster}/items", success: (result) =>
+      DropHunter.currentItemData = result
+      updateItemsView(result)
   )

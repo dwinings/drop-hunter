@@ -8,6 +8,10 @@ class Monster < ActiveRecord::Base
     "#{name} (#{Rank.rank_name(rank_id).capitalize})"
   end
 
+  def items
+    super.uniq
+  end
+
   def as_json(*)
     {
       id: id,

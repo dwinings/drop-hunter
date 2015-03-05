@@ -8,7 +8,7 @@ class Item < ActiveRecord::Base
     {
       id: id,
       name: name,
-      rank: rank,
+      rank: rank.id,
     }
   end
 end

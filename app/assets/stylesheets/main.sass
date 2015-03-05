@@ -1,6 +1,12 @@
 @import bootstrap-sprockets
 @import bootstrap
 
+$transition-duration: 0.3s
+@mixin transition($property)
+  transition: $property $transition-duration
+  -moz-transition: $property $transition-duration
+  -webkit-transition: $property $transition-duration
+
 .navbar-brand
   text-decoration: none
 
@@ -98,3 +104,10 @@ table.fixed
 #btn-go
   display: table
   margin: 0px auto
+
+
+#item-list
+  padding-top: 20px
+  .control-label
+    text-align: left
+    font-weight: 200

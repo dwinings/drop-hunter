@@ -1,6 +1,11 @@
 class MonstersController < ApplicationController
-  def monsters_json
-    Monsters.all.map(&:as_json).map(&:to_json)
+  def breaks
+    monster = Monster.find(params[:id])
+    render json: monster.breaks.to_json
   end
-  helper_method :monsters_json
+
+  def items
+    monster = Monster.find(params[:id])
+    render json: monster.items.to_json
+  end
 end
