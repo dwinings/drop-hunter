@@ -73,6 +73,17 @@ table.fixed
 .row
   padding-bottom: 10px
 
+.items-chooser
+  margin-top: 10px
+  margin-bottom: 10px
+
+@media screen and (min-width: 768px)
+  #item_list
+    border-right: #ddd 1px solid
+    margin-right: -1px
+  #drop_list
+    border-left: #ddd 1px solid
+ 
 #drop_list
   padding-top: 20px
 
@@ -83,6 +94,10 @@ table.fixed
     vertical-align: middle
   .drop-data-container
     margin-bottom: 10px
+  .drop-data-header
+    width: 200px
+    margin-left: auto
+    margin-right: auto
   .part-group-expander
     max-height: 0px
     overflow: hidden
@@ -106,8 +121,14 @@ table.fixed
   margin: 0px auto
 
 
-#item-list
+#item_list
   padding-top: 20px
+  .form-group
+    margin-left: auto
+    margin-right: auto
+    width: 200px
+  .number-input
+    display: inline-block
   .control-label
     text-align: left
     font-weight: 200

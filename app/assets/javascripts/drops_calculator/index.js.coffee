@@ -6,35 +6,11 @@ class desire.DropCalculator
       matches = [];
       substrRegex = new RegExp(escapeRegExp(query), 'i')
 
-      $.each(strs, (i, str) ->
+      $.each strs, (i, str) ->
         if (substrRegex.test(str['name']))
           matches.push(str)
-      )
 
       callback(matches)
-
-  updateDropsView: (breakData) =>
-    @dropsViewLoaded = true
-    maybeEnableCalculateButton()
-    template = HandlebarsTemplates["drops_calculator/drop_list"]
-    html = template(parts: breakData)
-    $('#drop_list').html(html)
-
-
-  updateItemsView: (itemData) ->
-    @itemsViewLoaded = true
-    @maybeEnableCalculateButton()
-    template = HandlebarsTemplates['drops_calculator/item_list']
-    html = template(items: itemData)
-    $('#item-list').html(html)
-
-  Handlebars.registerHelper("formatPercent", (f) ->
-    (f * 100).toFixed(0).toString() + "%"
-  )
-
-  maybeEnableCalculateButton: ->
-    if @itemsViewLoaded and @dropsViewLoaded
-      enableCalculateButton()
 
   enableCalculateButton: ->
     $('#btn-go').removeClass('disabled')
@@ -43,8 +19,11 @@ class desire.DropCalculator
     $('#btn-go').addClass('disabled')
 
   bind: ->
+    @disableCalculateButton()
     @dropsView = new desire.DropsView($('#drop_list'))
-    $('#monster-selector .typeahead').typeahead(
+    @itemsView = new desire.ItemsView($('#item_list'))
+
+    $('#monster_selector .typeahead').typeahead(
       {
         hint: false,
         highlight: true,
@@ -59,17 +38,22 @@ class desire.DropCalculator
 
     $('.tt-hint').addClass('form-control')
 
-    $('#monster-selector').bind('typeahead:selected', (obj, dater, name) =>
-      @disableCalculateButton()
+    $('#monster_selector .typeahead').bind('typeahead:selected', (obj, dater, name) =>
       desire.currentMonster = dater.id
-      $.ajax url: "/monsters/#{dater.id}/breaks", success: (result) =>
-        desire.currentBreakData = result
-        @dropsView.render(parts: result)
 
-      $.ajax url: "/monsters/#{dater.id}/items", success: (result) =>
-        desire.currentItemData = result
-        @updateItemsView(result)
+      $.when(
+        $.ajax url: "/monsters/#{dater.id}/breaks", success: (result) =>
+          desire.currentBreakData = result
+          @dropsView.render(parts: result)
+        $.ajax url: "/monsters/#{dater.id}/items", success: (result) =>
+          desire.currentItemData = result
+          @itemsView.render(items: result)
+      ).then(@enableCalculateButton)
     )
+
+Handlebars.registerHelper 'formatPercent', (f) ->
+  (f * 100).toFixed(0).toString() + '%'
+
 
 desire.App = new desire.DropCalculator()
 

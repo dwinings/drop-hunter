@@ -2,7 +2,7 @@ class desire.DropsView
   constructor: (@el) ->
     @template  = HandlebarsTemplates['drops_calculator/drop_list']
     @context = {}
-    @loaded = true
+    @loaded = false
     @listeners = $.Callbacks()
 
   render: (@context) ->
@@ -16,6 +16,7 @@ class desire.DropsView
         el.prop('checked', true)
 
     @bind()
+    @loaded = true
 
   bind: ->
     @toggleClickables.click @toggleDropTable
