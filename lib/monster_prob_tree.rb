@@ -19,7 +19,7 @@ class MonsterProbNode
     prob_dist.each do |type, outcome|
       new_successes = @successes.clone
 
-      if goal.keys.include?(type)
+      if goal.keys.include?(type) and goal[type] > @successes[type]
         new_successes = new_successes.update({type => @successes[type] + outcome[:reward]})
       end
 

@@ -16,6 +16,7 @@
 //= require bootstrap-material-design
 //= require twitter/typeahead
 //= require handlebars
+//= require d3
 //= require turbolinks
 //= require_tree .
 
