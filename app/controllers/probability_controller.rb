@@ -3,6 +3,7 @@ class ProbabilityController < ApplicationController
     @items  = params[:items]
     @item_set = @items.keys.map(&:to_i)
     @breaks = params[:breaks].map(&Break.method(:find))
+    adjust_breaks_for_multiples
     @ptree = MonsterProbTree.new(probabilities, goals)
     @results = []
     prob = 0
@@ -20,6 +21,26 @@ class ProbabilityController < ApplicationController
       acc[key.to_i] = value.to_i
       acc
     end
+  end
+
+  def adjust_breaks_for_multiples
+    @breaks = @breaks.reduce([]) do |acc, br|
+      case br.name
+      when "Capture"
+        acc << br
+        acc << br
+      when "Shiny Drops"
+        acc << br
+        acc << br
+      when "Body Carve"
+        acc << br
+        acc << br
+        acc << br
+      else
+        acc << br
+      end
+    end
+
   end
 
 
