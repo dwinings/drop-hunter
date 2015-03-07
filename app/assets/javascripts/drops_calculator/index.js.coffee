@@ -50,6 +50,14 @@ class desire.DropCalculator
           @itemsView.render(items: result)
       ).then(@enableCalculateButton)
     )
+    $('#btn-go').click =>
+      $.ajax
+        url: '/probability'
+        success: (dater) -> console.log dater
+        dataType: 'json'
+        data:
+          items:  @itemsView.requestedItems()
+          breaks: @dropsView.selectedBreaks()
 
 Handlebars.registerHelper 'formatPercent', (f) ->
   (f * 100).toFixed(0).toString() + '%'

@@ -5,6 +5,7 @@ class Break < ActiveRecord::Base
 
   def as_json(*)
     {
+      id: id,
       name: name,
       monster: monster_id,
       drops: item_drop_instances

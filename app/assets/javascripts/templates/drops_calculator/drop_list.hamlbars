@@ -3,7 +3,7 @@
     .drop-data-container
       .drop-data-header
         %span.text-holder
-          %input.check-box{type: 'checkbox', name: hb('name')}
+          %input.check-box{type: 'checkbox', name: hb('name'), breakid: hb('id')}
           %label.drop-expand-btn{type: 'checkbox', for: hb('name'), aria: {label: 'Expand'}}
             = hb 'name'
         %span.glyphicon.glyphicon-triangle-right{aria: {hidden: 'true'}}

@@ -2,6 +2,6 @@
   %form#item-selector-form.form-horizontal.items-container
     = hb 'each items' do
       .form-group
-        %input.number-input.col-md-1.form-control{type: 'number', min: '0', default: 0, name: "number-#{hb('id')}", placeholder: "0"}
-        %label.control-label{for: "number-#{hb('id')}"}
+        %input.number-input.col-md-1.form-control{type: 'number', min: '0', default: '0', name: "#{hb('id')}", placeholder: "0"}
+        %label.control-label{for: "#{hb('id')}"}
           = hb 'name'

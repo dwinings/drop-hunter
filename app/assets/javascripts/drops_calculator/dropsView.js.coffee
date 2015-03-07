@@ -21,6 +21,12 @@ class desire.DropsView
   bind: ->
     @toggleClickables.click @toggleDropTable
 
+  selectedBreaks: ->
+    result = []
+    $('.check-box:checked', @el).each (_, el) =>
+      result.push parseInt($(el).attr('breakid'))
+    result
+
   container: (el) ->
     el.parents('.drop-data-container')
 
