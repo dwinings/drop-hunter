@@ -22,6 +22,7 @@ class desire.DropCalculator
     @disableCalculateButton()
     @dropsView = new desire.DropsView($('#drop_list'))
     @itemsView = new desire.ItemsView($('#item_list'))
+    @chartView = new desire.ChartView($('#drop_chart'))
 
     $('#monster_selector .typeahead').typeahead(
       {
@@ -53,7 +54,7 @@ class desire.DropCalculator
     $('#btn-go').click =>
       $.ajax
         url: '/probability'
-        success: (dater) -> console.log dater
+        success: (dater) => @chartView.render(probs: dater)
         dataType: 'json'
         data:
           items:  @itemsView.requestedItems()
