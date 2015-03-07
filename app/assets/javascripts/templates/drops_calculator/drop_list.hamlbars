@@ -1,4 +1,4 @@
-%form#drop-selector-form.form-horizontal
+%form#drop_selector_form.form-horizontal
   = hb 'each parts' do
     .drop-data-container
       %span.text-holder
