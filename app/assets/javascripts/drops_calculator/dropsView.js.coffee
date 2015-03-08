@@ -20,6 +20,7 @@ class desire.DropsView
 
   bind: ->
     @toggleClickables.click @toggleDropTable
+    @checkboxes.change @onCheckboxChange
 
   selectedBreaks: ->
     result = []
@@ -35,6 +36,22 @@ class desire.DropsView
 
   expanderIcon: (container) ->
     expanderIcon = $('.glyphicon-triangle-right', container)
+
+  onCheckboxChange: (e) =>
+    # I know, body carve and capture should be radio buttons...
+    el = $(e.target)
+    if el.attr('name') == 'Capture'
+      otherEl = $("[name='Body Carve']")
+      if otherEl.is(':checked')
+        otherEl.prop('checked', false)
+      else
+        otherEl.prop('checked', true)
+    else if el.attr('name') == 'Body Carve'
+      otherEl = $("[name='Body Carve']")
+      if otherEl.is(':checked')
+        otherEl.prop('checked', false)
+      else
+        otherEl.prop('checked', true)
 
   toggleDropTable: (e) =>
     container    = @container($(e.target))
