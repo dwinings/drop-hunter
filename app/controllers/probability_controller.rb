@@ -9,7 +9,6 @@ class ProbabilityController < ApplicationController
     prob = 0
     while prob < 0.9
       @ptree.run_once
-      Rails.logger.debug "Current tree breadth: #{@ptree.current_ply.count}"
       prob = @ptree.victorious_prob || 0
       @results << prob
     end
