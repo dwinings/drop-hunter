@@ -58,3 +58,6 @@ scrape_monster_list.each do |monster|
   puts "Scraping #{monster[:name]}"
   scrape_monster(monster)
 end
+
+# Kill monsters with no breaks... they don't exist anyway.
+Monster.all.select { |m| m.items.empty? }.map(&:destroy)
