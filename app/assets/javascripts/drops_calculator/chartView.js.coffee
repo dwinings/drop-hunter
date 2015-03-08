@@ -8,7 +8,7 @@ class desire.ChartView
   render: (@context) ->
     @el.html(@template(@context))
 
-    margin = top: 20, right: 20, bottom: 30, left: 50
+    margin = top: 20, right: 0, bottom: 30, left: 50
     width = @el.width() - margin.left - margin.right
     height = 500 - margin.top - margin.bottom
 
@@ -20,7 +20,7 @@ class desire.ChartView
     xAxis = d3.svg.axis()
       .scale(x)
       .orient('bottom')
-      .ticks(Math.min(@context['probs'].length - 1, 20))
+      .ticks(Math.min(@context['probs'].length - 1, 10))
 
     yAxis = d3.svg.axis()
       .scale(y)
@@ -74,9 +74,34 @@ class desire.ChartView
       .append('text')
         .attr('y', -10)
         .attr('x', width - 30)
-
         .style('text-anchor', 'end')
         .text('# of hunts')
+
+    entering.append('g')
+      .attr('class', 'x axis grid')
+      .attr('transform', "translate(0, #{height - margin.top})")
+      .call(xAxis.tickSize(-(height - margin.top - margin.bottom), 0, 0).tickFormat(''))
+
+    entering.append('g')
+      .attr('class', 'y axis grid')
+      .attr('transform', "translate(#{margin.left}, 0)")
+      .call(yAxis.tickSize(-(width - margin.right - margin.left), 0, 0).tickFormat(''))
+
+    entering.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', "translate(0, #{margin.bottom})")
+      .call(xAxis.orient('top').tickFormat('').tickSize(0,0,0))
+      .append('text')
+        .attr('class', 'chart-title')
+        .attr('x', width / 2)
+        .attr('y', -10)
+        .style('text-anchor', 'middle')
+        .text('Chance of Success by # of Hunts')
+
+    entering.append('g')
+      .attr('class', 'y axis')
+      .attr('transform', "translate(#{width - margin.right}, 0)")
+      .call(yAxis.orient('right').tickFormat('').tickSize(0,0,0))
 
     @bind()
 
