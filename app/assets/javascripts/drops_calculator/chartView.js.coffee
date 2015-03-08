@@ -78,5 +78,12 @@ class desire.ChartView
         .style('text-anchor', 'end')
         .text('# of hunts')
 
-  bind: ->
+    @bind()
+
+  bind: =>
+    $(window).on('resize',  _.debounce( =>
+      console.log "What"
+      @render(@context)
+    , 300))
+
 

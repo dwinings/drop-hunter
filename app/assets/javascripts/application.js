@@ -17,6 +17,7 @@
 //= require twitter/typeahead
 //= require handlebars
 //= require d3
+//= require lodash
 //= require turbolinks
 //= require_tree .
 

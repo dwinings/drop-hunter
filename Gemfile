@@ -9,6 +9,7 @@ gem 'pg'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 gem 'd3-rails'
+gem 'lodash-rails'
 gem 'bootstrap-sass'
 gem 'haml-rails'
 gem 'httparty'
