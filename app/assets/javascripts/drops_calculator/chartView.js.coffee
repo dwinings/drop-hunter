@@ -108,7 +108,6 @@ class desire.ChartView
 
   bind: =>
     $(window).on('resize',  _.debounce( =>
-      console.log "What"
       @render(@context)
     , 300))
 
