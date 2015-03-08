@@ -39,7 +39,7 @@ class desire.ChartView
       .y0(height - margin.top)
       .interpolate('basis')
 
-    svg = d3.select(@el.selector).append('svg')
+    svg = d3.select(@el.selector + ' svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
 
