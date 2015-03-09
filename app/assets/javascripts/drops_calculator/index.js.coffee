@@ -24,6 +24,10 @@ class desire.DropCalculator
     @itemsView = new desire.ItemsView($('#item_list'))
     @chartView = new desire.ChartView($('#drop_chart'))
 
+    $('.navbar-brand').click ->
+      window.location.reload = true
+      window.location.href = '/'
+
     $('#monster_selector .typeahead').typeahead(
       {
         hint: false,
