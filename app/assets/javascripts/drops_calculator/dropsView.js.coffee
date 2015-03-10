@@ -47,7 +47,7 @@ class desire.DropsView
       else
         otherEl.prop('checked', true)
     else if el.attr('name') == 'Body Carve'
-      otherEl = $("[name='Body Carve']")
+      otherEl = $("[name='Capture']")
       if otherEl.is(':checked')
         otherEl.prop('checked', false)
       else
