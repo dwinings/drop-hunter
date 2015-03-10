@@ -1,4 +1,5 @@
 class ProbabilityController < ApplicationController
+  MAX_ITERATIONS = 250
   def index
     @items  = params[:items]
     @item_set = @items.keys.map(&:to_i)
@@ -7,8 +8,10 @@ class ProbabilityController < ApplicationController
     @ptree = MonsterProbTree.new(probabilities, goals)
     @results = []
     prob = 0
-    while prob < 0.9
+    iterations = 0
+    while prob < 0.9 && iterations < MAX_ITERATIONS
       @ptree.run_once
+      iterations += 1
       prob = @ptree.victorious_prob || 0
       @results << prob
     end
