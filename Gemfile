@@ -46,6 +46,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :production do
   gem 'rails_12factor'
+  gem 'newrelic_rpm'
 end
 
 group :development, :test do
