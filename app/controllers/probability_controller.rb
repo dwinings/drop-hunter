@@ -1,21 +1,27 @@
 class ProbabilityController < ApplicationController
-  MAX_ITERATIONS = 250
+  MAX_ITERATIONS = 100
   def index
     @items  = params[:items]
     @item_set = @items.keys.map(&:to_i)
     @breaks = params[:breaks].map(&Break.method(:find))
     adjust_breaks_for_multiples
-    @ptree = MonsterProbTree.new(probabilities, goals)
-    @results = []
-    prob = 0
-    iterations = 0
-    while prob < 0.9 && iterations < MAX_ITERATIONS
-      @ptree.run_once
-      iterations += 1
-      prob = @ptree.victorious_prob || 0
-      @results << prob
+    unless impossible_query?
+      @ptree = MonsterProbTree.new(probabilities, goals)
+      @results = []
+      prob = 0
+      iterations = 0
+      while prob < 0.9 && iterations < MAX_ITERATIONS
+        @ptree.run_once
+        iterations += 1
+        prob = @ptree.victorious_prob || 0
+        @results << prob
+      end
+      Rails.logger.info "Tree breadth for query: #{@ptree.current_ply.count}"
+    else
+      Rails.logger.info "Ignoring impossible query."
+      @results = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     end
-    Rails.logger.info "Tree breadth for query: #{@ptree.current_ply.count}"
+
     render json: @results.to_json
   end
 
@@ -24,6 +30,11 @@ class ProbabilityController < ApplicationController
       acc[key.to_i] = value.to_i
       acc
     end
+  end
+
+  def impossible_query?
+    # No items that do not appear as a key to a probability
+    !(@items.keys.map(&:to_i) - probabilities.map(&:keys).flatten).empty?
   end
 
   def adjust_breaks_for_multiples
@@ -54,7 +65,7 @@ class ProbabilityController < ApplicationController
           @item_set.include?(instance.item_id)
         end.reduce(nil) do |acc, instance|
           acc ||= {}
-          acc[instance.item_id] = {reward: instance.quantity, prob: (instance.probability*100)/100.to_r}
+          acc[instance.item_id] = {reward: instance.quantity, prob: instance.probability}
           acc
         end
       end.compact
