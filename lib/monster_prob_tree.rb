@@ -1,7 +1,7 @@
 class MonsterProbNode
   attr_accessor :successes, :attempts, :probspace
 
-  def initialize(successes={}, attempts=0, probspace=1r)
+  def initialize(successes={}, attempts=0, probspace=1.0)
     @successes, @attempts, @probspace = successes, attempts, probspace
   end
 
@@ -18,7 +18,7 @@ class MonsterProbNode
 
       #                           goal[type]                                @successes[type]
       if type_id && (((goal & (0xFF << type_id)) >> type_id) > ((@successes & (0xFF << type_id)) >> type_id))
-        #                  successes[type] += outcome[:reward]
+        #                 @successes[type] += outcome[:reward]
         new_successes = @successes + (outcome[:reward] << type_id)
       end
 
@@ -112,7 +112,7 @@ end
 
 if __FILE__ == $0
   require 'ruby-prof'
-  pt = MonsterProbTree.new([{a: {reward: 1, prob: 0.5}, b: {reward: 2, prob: 0.1}, c: {reward: 1, prob: 0.01}, failure: {prob: 39/100r}}], {a: 3, b: 6, c: 4})
+  pt = MonsterProbTree.new([{a: {reward: 1, prob: 0.5}, b: {reward: 2, prob: 0.1}, c: {reward: 1, prob: 0.01}, failure: {prob: 0.39}}], {a: 3, b: 6, c: 4})
 
   RubyProf.start
 
