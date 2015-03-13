@@ -7,6 +7,20 @@ $transition-duration: 0.3s
   -moz-transition: $property $transition-duration
   -webkit-transition: $property $transition-duration
 
+.monster-selector-row
+  margin-bottom: 20px
+
+.subheader
+  text-align: center
+  padding-bottom: 3px
+  margin-bottom: 20px
+  border-bottom-style: solid
+  border-bottom-width: 1px
+  border-bottom-color: #999
+  margin-left: 15%
+  margin-right: 15%
+  font-weight: 700
+
 .navbar-brand
   text-decoration: none
 
@@ -73,23 +87,24 @@ table.fixed
 .row
   padding-bottom: 10px
 
-.items-chooser
-  margin-top: 10px
-  margin-bottom: 10px
-
 @media screen and (min-width: 768px)
-  #item_list
+  .right-bordered
     border-right: #ddd 1px solid
     margin-right: -1px
-  #drop_list
+  .left-bordered
     border-left: #ddd 1px solid
 
 #drop_list
-  padding-top: 20px
+  display: inline
+  .display: inline
+  label
+    font-weight: 200
 
   .text-holder
     overflow: hidden
-    width: 120px
+    text-overflow: ellipsis
+    white-space: nowrap
+    width: 160px
     display: inline-block
     vertical-align: middle
   .drop-data-container
@@ -110,7 +125,7 @@ table.fixed
     cursor: pointer
 
   .glyphicon-triangle-right
-    margin-left: 15px
+    margin-left: 0px
     transform: rotate(0deg)
     -webkit-transform: rotate(0deg)
     -ms-transform: rotate(0deg)
@@ -124,7 +139,7 @@ table.fixed
 
 
 #item_list
-  padding-top: 20px
+  display: inline
   .form-group
     margin-left: auto
     margin-right: auto

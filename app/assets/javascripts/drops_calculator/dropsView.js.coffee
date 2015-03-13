@@ -10,6 +10,7 @@ class desire.DropsView
     @checkboxes = $('input.check-box', @el)
     @toggleClickables = $('.drop-expand-btn', @el)
       .add('.glyphicon-triangle-right', @el)
+      .add('.text-holder', @el)
     @checkboxes.each ->
       el = $(this)
       unless el.attr('name') == 'Capture' || el.attr('name') == 'Virus Reward'

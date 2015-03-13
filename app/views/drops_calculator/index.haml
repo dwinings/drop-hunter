@@ -1,15 +1,15 @@
 .col-sm-1
 .col-sm-10
   .well
-    .row
+    .row.monster-selector-row
       #monster_selector
         .col-sm-3
         .col-sm-6
           %input.form-control.typeahead{type: 'text', placeholder: "Enter Monster"}
         .col-sm-3
     .row.items-chooser
-      #item_list.col-sm-6
-      #drop_list.col-sm-6
+      #item_list
+      #drop_list
     .row
       #btn-go.btn.btn-raised.btn-action.disabled
         Calculate
