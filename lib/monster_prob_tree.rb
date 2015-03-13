@@ -17,7 +17,7 @@ class MonsterProbNode
       type_id = type_lookup[type]
 
       #                           goal[type]                                @successes[type]
-      if type_id && (((goal & (0xFF << type_id)) >> type_id) > ((@successes & (0xFF << type_id)) >> type_id))
+      if type_id && (((goal >> type_id) & 0xFF) > ((@successes >> type_id) & 0xFF))
         #                 @successes[type] += outcome[:reward]
         new_successes = @successes + (outcome[:reward] << type_id)
       end
