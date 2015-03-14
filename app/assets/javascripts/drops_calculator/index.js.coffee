@@ -56,6 +56,10 @@ class desire.DropCalculator
       ).then(@enableCalculateButton)
     )
     $('#btn-go').click =>
+      @chartView.renderTemplate({})
+      $('html, body').animate({
+        scrollTop: $('.drops-calc-chart').offset().top
+      }, '300', 'swing')
       $.ajax
         url: '/probability'
         success: (dater) => @chartView.render(probs: dater)
@@ -66,7 +70,6 @@ class desire.DropCalculator
 
 Handlebars.registerHelper 'formatPercent', (f) ->
   (f * 100).toFixed(0).toString() + '%'
-
 
 desire.App = new desire.DropCalculator()
 
