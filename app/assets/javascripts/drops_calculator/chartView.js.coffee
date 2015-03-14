@@ -8,7 +8,7 @@ class desire.ChartView
   renderTemplate: (@context) ->
     @el.html(@template(@context))
 
-  render: (@context) ->
+  render: (@context, doTransition = true) ->
     @el.html(@template(@context))
 
     data = @context.probs.map (x, i) ->
@@ -22,6 +22,11 @@ class desire.ChartView
     x.domain([0, data.length-1])
     y = d3.scale.linear().range([height - margin.top, margin.bottom])
     y.domain([0, 1])
+
+    if doTransition
+      transitionDuration = 1000
+    else
+      transitionDuration = 0
 
     xAxis = d3.svg.axis()
       .scale(x)
@@ -74,14 +79,14 @@ class desire.ChartView
       .style('stroke', 'none')
       .style('fill', '#9fa8da')
       .style('opacity', 0.5)
-      .transition().duration(1000)
+      .transition().duration(transitionDuration)
         .attrTween('d', tweener(area))
     entering.append('path')
       .attr('class', 'line')
       .style('fill', 'none')
       .style('stroke-width', 2)
       .style('stroke', '#1a237e')
-      .transition().duration(1000)
+      .transition().duration(transitionDuration)
         .attrTween('d', tweener(line))
     entering.append('g')
       .attr('class', 'y axis')
@@ -137,12 +142,13 @@ class desire.ChartView
           .attr('cx', (d) -> x(d.x))
           .attr('cy', (d) -> y(d.y))
           .attr('r', 3)
+          .attr('fill', '#1a237e')
 
     @bind()
 
   bind: =>
     $(window).on('resize',  _.debounce( =>
-      @render(@context)
+      @render(@context, 0)
     , 300))
 
 
