@@ -60,9 +60,14 @@ class desire.DropCalculator
       $('html, body').animate({
         scrollTop: $('.drops-calc-chart').offset().top
       }, '300', 'swing')
+
+      @chartView.renderTemplate()
+      @chartView.showSpinner();
       $.ajax
         url: '/probability'
-        success: (dater) => @chartView.render(probs: dater)
+        success: (dater) =>
+          @chartView.hideSpinner()
+          @chartView.render(probs: dater.results)
         dataType: 'json'
         data:
           items:  @itemsView.requestedItems()

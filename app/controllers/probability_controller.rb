@@ -1,5 +1,8 @@
+require 'timeout'
+
 class ProbabilityController < ApplicationController
   MAX_ITERATIONS = 100
+  MAX_RUNTIME = 5
   def index
     @items  = params[:items]
     @item_set = @items.keys.map(&:to_i)
@@ -10,11 +13,19 @@ class ProbabilityController < ApplicationController
       @results = []
       prob = 0
       iterations = 0
-      while prob < 0.9 && iterations < MAX_ITERATIONS
-        @ptree.run_once
-        iterations += 1
-        prob = @ptree.victorious_prob || 0
-        @results << prob
+      did_timeout = false
+      Timeout::timeout(MAX_RUNTIME, Timeout::Error) do
+        begin
+          while prob < 0.9 && iterations < MAX_ITERATIONS
+            @ptree.run_once
+            iterations += 1
+            prob = @ptree.victorious_prob || 0
+            @results << prob
+          end
+        rescue Timeout::Error => e
+          Rails.logger.info "Calculation timed out after #{iterations} hunts"
+          did_timeout = true
+        end
       end
       Rails.logger.info "Tree breadth for query: #{@ptree.current_ply.count}"
     else
@@ -22,7 +33,9 @@ class ProbabilityController < ApplicationController
       @results = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     end
 
-    render json: @results.to_json
+    resp = {timed_out: did_timeout, results: @results, breadth: @ptree.current_ply.count}
+
+    render json: resp.to_json
   end
 
   def goals

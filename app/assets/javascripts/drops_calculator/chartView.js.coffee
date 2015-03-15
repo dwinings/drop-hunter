@@ -8,6 +8,19 @@ class desire.ChartView
   renderTemplate: (@context) ->
     @el.html(@template(@context))
 
+  showSpinner: =>
+    $('.chart-container', @el).spin(
+      lines: 9
+      length: 27
+      width: 7
+      corners: 0.8
+      speed: 0.7
+      className: 'spinner'
+    )
+
+  hideSpinner: =>
+    $('.chart-container', @el).spin(false)
+
   render: (@context, doTransition = true) ->
     @el.html(@template(@context))
 

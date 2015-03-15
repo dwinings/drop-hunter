@@ -16,6 +16,8 @@
 //= require bootstrap-material-design
 //= require twitter/typeahead
 //= require handlebars
+//= require spin
+//= require jquery.spin
 //= require d3
 //= require lodash
 //= require turbolinks
