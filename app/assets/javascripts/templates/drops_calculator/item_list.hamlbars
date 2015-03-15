@@ -1,5 +1,5 @@
 .col-sm-6{style: 'padding-left: 0px; padding-right: 0px; margin-bottom: 15px'}
-  .subheader Desired Items (max 4)
+  .subheader Desired Items
   .container-fluid.right-bordered
     %form#item-selector-form.form-horizontal.items-container
       = hb 'each items' do
