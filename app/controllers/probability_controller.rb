@@ -11,7 +11,7 @@ class ProbabilityController < ApplicationController
     unless impossible_query?
       possible = true
       @ptree = MonsterProbTree.new(probabilities, goals)
-      @results = []
+      @results = [0.0]
       prob = 0
       iterations = 0
       did_timeout = false

@@ -44,7 +44,6 @@ class desire.ChartView
     xAxis = d3.svg.axis()
       .scale(x)
       .orient('bottom')
-      .tickFormat( (i) -> String(parseInt(i+1)) )
       .ticks(Math.min(data.length - 1, 10))
 
     yAxis = d3.svg.axis()

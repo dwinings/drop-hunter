@@ -19,7 +19,7 @@ class MonsterProbNode
       #                           goal[type]                                @successes[type]
       if type_id && (((goal >> type_id) & 0xFF) > ((@successes >> type_id) & 0xFF))
         #                 @successes[type] += outcome[:reward]
-        new_successes = @successes + (outcome[:reward] << type_id)
+        new_successes = [goal, @successes + (outcome[:reward] << type_id)].min
       end
 
       kidlets << MonsterProbNode.new(
