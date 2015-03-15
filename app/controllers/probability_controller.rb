@@ -4,9 +4,9 @@ class ProbabilityController < ApplicationController
   MAX_ITERATIONS = 100
   MAX_RUNTIME = 5
   def index
-    @items  = params[:items]
+    @items  = params[:items] || {}
     @item_set = @items.keys.map(&:to_i)
-    @breaks = params[:breaks].map(&Break.method(:find))
+    @breaks = params[:breaks].andand.map(&Break.method(:find)) || {}
     adjust_breaks_for_multiples
     unless impossible_query?
       possible = true
@@ -54,7 +54,8 @@ class ProbabilityController < ApplicationController
 
   def impossible_query?
     # No items that do not appear as a key to a probability
-    !(@items.keys.map(&:to_i) - probabilities.map(&:keys).flatten).empty?
+
+    @items.empty? || @breaks.empty? || !(@items.keys.map(&:to_i) - probabilities.map(&:keys).flatten).empty?
   end
 
   def adjust_breaks_for_multiples
