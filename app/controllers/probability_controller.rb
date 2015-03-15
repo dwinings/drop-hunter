@@ -9,6 +9,7 @@ class ProbabilityController < ApplicationController
     @breaks = params[:breaks].map(&Break.method(:find))
     adjust_breaks_for_multiples
     unless impossible_query?
+      possible = true
       @ptree = MonsterProbTree.new(probabilities, goals)
       @results = []
       prob = 0
@@ -30,10 +31,16 @@ class ProbabilityController < ApplicationController
       Rails.logger.info "Tree breadth for query: #{@ptree.current_ply.count}"
     else
       Rails.logger.info "Ignoring impossible query."
+      possible = false
       @results = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     end
 
-    resp = {timed_out: did_timeout, results: @results, breadth: @ptree.current_ply.count}
+    resp = {
+      timed_out: did_timeout,
+      possible: possible,
+      results: @results,
+      breadth: @ptree.andand.current_ply.andand.count || 0
+    }
 
     render json: resp.to_json
   end

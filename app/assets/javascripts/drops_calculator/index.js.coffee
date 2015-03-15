@@ -18,6 +18,33 @@ class desire.DropCalculator
   disableCalculateButton: ->
     $('#btn-go').addClass('disabled')
 
+  clearNotifications: =>
+    $('#notifications_area').html('')
+    $('#notifications_area').hide()
+
+  showNotificationsIfNecessary: (dater) =>
+    el = $('#notifications_area')
+
+    if dater.timed_out || !dater.possible
+      el.show()
+      if dater.timed_out
+        el.append('
+          <div class="alert alert-danger" role="alert">
+            <span class "glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error: </span>
+            Your request timed out. This is usually caused by a query that asks for too many different items. For a longer calculation, try asking for fewer items.
+          </div>
+        ')
+
+      else if dater.possible == false
+        el.append('
+          <div class="alert alert-danger" role="alert">
+            <span class "glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error: </span>
+            The parts you asked for cannot be obtained in the specified hunt. Please revisit your broken parts and try again.
+          </div>
+        ')
+
   bind: ->
     @disableCalculateButton()
     @dropsView = new desire.DropsView($('#drop_list'))
@@ -62,11 +89,15 @@ class desire.DropCalculator
       }, '300', 'swing')
 
       @chartView.renderTemplate()
-      @chartView.showSpinner();
+      @chartView.showSpinner()
+      @clearNotifications()
+      @disableCalculateButton()
       $.ajax
         url: '/probability'
         success: (dater) =>
           @chartView.hideSpinner()
+          @enableCalculateButton()
+          @showNotificationsIfNecessary(dater)
           @chartView.render(probs: dater.results)
         dataType: 'json'
         data:
