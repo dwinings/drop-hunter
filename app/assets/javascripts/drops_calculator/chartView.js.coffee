@@ -54,13 +54,13 @@ class desire.ChartView
     line = d3.svg.line()
       .x( (d) -> x(d.x) )
       .y( (d)    -> y(d.y) )
-      .interpolate('cardinal')
+      .interpolate('monotone')
 
     area = d3.svg.area()
       .x( (d, i) -> x(d.x) )
       .y( (d)    -> y(d.y) )
       .y0(height - margin.top)
-      .interpolate('cardinal')
+      .interpolate('monotone')
 
     tweener = (fn) =>
       =>
