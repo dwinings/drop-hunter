@@ -18,7 +18,7 @@ gem 'bootstrap-material-design'
 gem 'twitter-typeahead-rails'
 gem 'hamlbars'
 gem 'handlebars_assets'
-gem 'puma'
+gem 'passenger'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
