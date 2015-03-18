@@ -1,11 +1,20 @@
 class MonsterProbNode
   attr_accessor :successes, :attempts, :probspace
 
-  def initialize(successes={}, attempts=0, probspace=1.0)
+  def initialize(successes=0, attempts=0, probspace=1.0)
     @successes, @attempts, @probspace = successes, attempts, probspace
   end
 
-  def gen_children(prob_dist, goal, type_lookup)
+  def self.create_or_reuse(successes=0, attempts=0, probspace=1.0, node_pool = [])
+    node = node_pool.pop
+    return MonsterProbNode.new(successes, attempts, probspace) unless node
+    node.successes = successes
+    node.attempts  = attempts
+    node.probspace = probspace
+    node
+  end
+
+  def gen_children(prob_dist, goal, type_lookup, node_pool = [])
     # if (prob > 1.0)
     #   raise ArgumentError, "Can't have a chance (#{prob}) of over 100%."
     # end
@@ -22,10 +31,11 @@ class MonsterProbNode
         new_successes = [goal, @successes + (outcome[:reward] << type_id)].min
       end
 
-      kidlets << MonsterProbNode.new(
+      kidlets << MonsterProbNode.create_or_reuse(
         new_successes,
         @attempts + 1,
-        @probspace * outcome[:prob]
+        @probspace * outcome[:prob],
+        node_pool
       )
     end
     return kidlets
@@ -41,6 +51,7 @@ class MonsterProbTree
 
   def initialize(prob_dists, goal_hash)
     @prob_dists = prob_dists.map(&:to_a)
+    @discarded_nodes = []
     # I bitpack this hash, it cut the runtime in half.
     init_goal(goal_hash)
     @prob_idx = 0
@@ -62,15 +73,17 @@ class MonsterProbTree
   # One ply is the result of a single break, not a single hunt here
   def next_ply
     current_prob_dist = next_prob_dist
-    @current_ply.map! do |pnode|
-      pnode.gen_children(current_prob_dist, @goal, @type_lookup)
-    end.flatten!
-    @current_ply = merge_dupes(@current_ply)
+    future_ply = @current_ply.map do |pnode|
+      pnode.gen_children(current_prob_dist, @goal, @type_lookup, @discarded_nodes)
+    end.flatten
+    @discarded_nodes.push(*@current_ply)
+    @current_ply = merge_dupes(future_ply)
   end
 
   def merge_dupes(ply)
     ply.group_by(&:successes).reduce([]) do |acc, (_, nodes)|
       nodes.first.probspace = nodes.reduce(0) {|acc, node| acc += node.probspace}
+      @discarded_nodes.push(*nodes[1..-1])
       acc << nodes.first
       acc
     end
@@ -112,11 +125,18 @@ end
 
 if __FILE__ == $0
   require 'ruby-prof'
-  pt = MonsterProbTree.new([{a: {reward: 1, prob: 0.5}, b: {reward: 2, prob: 0.1}, c: {reward: 1, prob: 0.01}, failure: {prob: 0.39}}], {a: 3, b: 6, c: 4})
+  pt = MonsterProbTree.new([
+    {
+      a: {reward: 1, prob: 0.5},
+      b: {reward: 2, prob: 0.1},
+      c: {reward: 1, prob: 0.01},
+      failure: {prob: 0.39}
+    }
+  ], {a: 3, b: 6, c: 4})
 
   RubyProf.start
 
-  (1..250).each { |_| pt.next_ply }
+  (1..5000).each { |_| pt.next_ply }
 
   results = RubyProf.stop
 
