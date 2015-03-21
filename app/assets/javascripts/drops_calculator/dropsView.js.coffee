@@ -14,8 +14,7 @@ class desire.DropsView
   render: (@context) ->
     @el.html(@template(@context))
     @checkboxes = $('input.check-box', @el)
-    @toggleClickables = $('.drop-expand-btn', @el)
-      .add('.glyphicon-triangle-right', @el)
+    @toggleClickables = $('.drop-data-header', @el)
     @checkboxes.each ->
       el = $(this)
       unless el.attr('name') == 'Capture' || el.attr('name') == 'Virus Reward'
@@ -27,6 +26,8 @@ class desire.DropsView
   bind: ->
     @toggleClickables.click @toggleDropTable
     @checkboxes.change @onCheckboxChange
+    @checkboxes.click (e) ->
+      e.stopPropagation()
 
   selectedBreaks: ->
     result = []
