@@ -13,7 +13,7 @@ class Break < ActiveRecord::Base
       acc[drop.item_id] = {reward: drop.quantity, prob: drop.probability}
       acc
     end
-    drops ? insert_failure_case(multiply(drops)) : nil
+    drops ? insert_failure_case(multiply(drops, opts)) : nil
   end
 
   def multiply(drops, opts = {})
@@ -27,7 +27,7 @@ class Break < ActiveRecord::Base
       acc
     when "Shiny Drops"
       if opts[:shinies]
-        (0..opts[:shinies]).each do |_|
+        (1..opts[:shinies].to_i).each do |_|
           acc << clone_drops(drops)
         end
       else

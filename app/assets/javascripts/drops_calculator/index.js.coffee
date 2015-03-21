@@ -101,8 +101,9 @@ class desire.DropCalculator
           @chartView.render(probs: dater.results)
         dataType: 'json'
         data:
-          items:  @itemsView.requestedItems()
-          breaks: @dropsView.selectedBreaks()
+          items:   @itemsView.requestedItems()
+          breaks:  @dropsView.selectedBreaks()
+          shinies: @dropsView.numShinies() if @dropsView.numShinies()
 
 Handlebars.registerHelper 'formatPercent', (f) ->
   (f * 100).toFixed(0).toString() + '%'

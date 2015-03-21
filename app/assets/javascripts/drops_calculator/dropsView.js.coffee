@@ -15,6 +15,7 @@ class desire.DropsView
     @el.html(@template(@context))
     @checkboxes = $('input.check-box', @el)
     @toggleClickables = $('.drop-data-header', @el)
+    @shinyInput = @el.find('.shiny-input')
     @checkboxes.each ->
       el = $(this)
       unless el.attr('name') == 'Capture' || el.attr('name') == 'Virus Reward'
@@ -28,6 +29,11 @@ class desire.DropsView
     @checkboxes.change @onCheckboxChange
     @checkboxes.click (e) ->
       e.stopPropagation()
+    @shinyInput.click (e) ->
+      e.stopPropagation()
+
+  numShinies: ->
+    @shinyInput.val() || null
 
   selectedBreaks: ->
     result = []
