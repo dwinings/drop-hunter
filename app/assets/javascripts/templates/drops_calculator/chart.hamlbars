@@ -1,2 +1,2 @@
-.chart-container{style: 'height: 500px;'}
+.chart-container{style: 'height: 500px; padding: 20px'}
   %svg.drops-calc-chart{height: 500}
