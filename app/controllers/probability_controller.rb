@@ -7,7 +7,6 @@ class ProbabilityController < ApplicationController
     @items  = params[:items] || {}
     @item_set = @items.keys.map(&:to_i)
     @breaks = params[:breaks].andand.map(&Break.method(:find)) || {}
-    adjust_breaks_for_multiples
     unless impossible_query?
       possible = true
       @ptree = MonsterProbTree.new(probabilities, goals)
@@ -41,7 +40,6 @@ class ProbabilityController < ApplicationController
       results: @results,
       breadth: @ptree.andand.current_ply.andand.count || 0
     }
-
     render json: resp.to_json
   end
 
@@ -52,60 +50,16 @@ class ProbabilityController < ApplicationController
     end
   end
 
-  def impossible_query?
-    # No items that do not appear as a key to a probability
-
-    @items.empty? || @breaks.empty? || !(@items.keys.map(&:to_i) - probabilities.map(&:keys).flatten).empty?
-  end
-
-  def adjust_breaks_for_multiples
-    @breaks = @breaks.reduce([]) do |acc, br|
-      case br.name
-      when "Capture"
-        acc << br
-        acc << br
-      when "Shiny Drops"
-        acc << br
-        acc << br
-      when "Body Carve"
-        acc << br
-        acc << br
-        acc << br
-      else
-        acc << br
-      end
-    end
-
-  end
-
-
   def probabilities
-    if !@probabilities
-      @probabilities = @breaks.map do |br|
-        br.item_drop_instances.to_a.select do |instance|
-          @item_set.include?(instance.item_id)
-        end.reduce(nil) do |acc, instance|
-          acc ||= {}
-          acc[instance.item_id] = {reward: instance.quantity, prob: instance.probability}
-          acc
-        end
-      end.compact
-      insert_failure_case(@probabilities)
-    end
+    @probabilities ||= (
+      @breaks.map {|br| br.probabilities(@item_set, params) }.flatten.compact
+    )
     @probabilities
   end
 
-
-  def insert_failure_case(probabilities)
-    probabilities.map! do |br|
-      prob_gap = br.reduce(1) do |acc, (_, outcome)|
-        acc - outcome[:prob]
-      end
-      if prob_gap > 0.00000000001
-        br.update({failure: {prob: prob_gap, reward: 0}})
-      else
-        br
-      end
-    end
+  def impossible_query?
+    # No items that do not appear as a key to a probability
+    @items.empty? || @breaks.empty? || !(@items.keys.map(&:to_i) - probabilities.map(&:keys).flatten).empty?
   end
+
 end
