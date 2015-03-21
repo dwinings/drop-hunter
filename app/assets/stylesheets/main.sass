@@ -98,21 +98,36 @@ table.fixed
   display: inline
   .display: inline
   label
-    font-weight: 200
+    font-weight: bold
 
   .text-holder
     text-overflow: ellipsis
     white-space: nowrap
-    width: 160px
     display: inline-block
     vertical-align: middle
   .drop-data-container
     margin-bottom: 10px
-  .drop-data-header
-    width: 200px
+    width: 90%
     margin-left: auto
     margin-right: auto
+  .drop-data-header
+    margin-left: auto
+    margin-right: auto
+    height: 40px
+    line-height: 24px
     cursor: pointer
+    padding: 6px 13px
+    border-radius: 3px
+    border-width: 1px
+    border-style: solid
+    background-color: #eee
+    border-color: #ccc
+    .number-input
+      height: 24px
+      line-height: 24px
+      margin-left: 10px
+      display: inline-block
+      background-color: #eee
   .part-group-expander
     max-height: 0px
     overflow: hidden
@@ -123,10 +138,10 @@ table.fixed
     padding-left: 0px
     cursor: pointer
     display: inline-block
-    width: 100%
 
   .glyphicon-triangle-right
-    margin-left: 0px
+    float: right
+    margin-top: 6px
     transform: rotate(0deg)
     -webkit-transform: rotate(0deg)
     -ms-transform: rotate(0deg)
@@ -149,7 +164,7 @@ table.fixed
     display: inline-block
   .control-label
     text-align: left
-    font-weight: 200
+    font-weight: normal
     max-width: 100px
     white-space: nowrap
 
@@ -158,6 +173,8 @@ table.fixed
   .spinner
     position: relative !important
     top: 100px !important
+  .drop-table
+    
   .grid
     line
       stroke: black

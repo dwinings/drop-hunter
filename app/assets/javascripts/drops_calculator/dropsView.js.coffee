@@ -1,5 +1,11 @@
 class desire.DropsView
   constructor: (@el) ->
+    Handlebars.registerHelper 'ifValue', (conditional, options) ->
+      if options.hash.value == conditional
+        options.fn(@)
+      else
+        options.inverse(@)
+
     @template  = HandlebarsTemplates['drops_calculator/drop_list']
     @context = {}
     @loaded = false

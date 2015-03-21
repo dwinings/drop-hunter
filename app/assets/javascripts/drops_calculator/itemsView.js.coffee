@@ -7,7 +7,7 @@ class desire.ItemsView
 
   render: (@context) ->
     @el.html(@template(@context))
-    @inputs = $('.number-input')
+    @inputs = @el.find('.number-input')
     @bind()
     @loaded = true
 

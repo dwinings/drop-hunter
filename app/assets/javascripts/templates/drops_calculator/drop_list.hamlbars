@@ -16,12 +16,12 @@
                 %tr
                   %th
                     Item
-                  %th
+                  %th{style: 'width: 105px;'}
                     Drop Chance
               %tbody
                 = hb 'each drops' do
                   %tr
                     %td
                       = hb 'name'
-                    %td
+                    %td{style: 'text-align: center;'}
                       = hb 'formatPercent probability'
