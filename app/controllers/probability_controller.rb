@@ -27,7 +27,14 @@ class ProbabilityController < ApplicationController
           did_timeout = true
         end
       end
-      Rails.logger.info "Tree breadth for query: #{@ptree.current_ply.count}"
+      depth = @ptree.depth
+      breadth = @ptree.current_ply.count
+      nodes = @ptree.num_nodes
+      Rails.logger.info "Tree depth for query: #{depth}"
+      Rails.logger.info "Final Tree breadth for query: #{breadth}"
+      Rails.logger.info "Node usage: #{breadth} current, " +
+        "#{@ptree.discarded_nodes.count} discarded, " +
+        "#{@ptree.current_ply.count.to_f * 100 / @ptree.num_nodes}% in ply"
     else
       Rails.logger.info "Ignoring impossible query."
       possible = false

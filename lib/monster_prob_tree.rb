@@ -1,55 +1,20 @@
 class MonsterProbNode
-  attr_accessor :successes, :attempts, :probspace
+  attr_accessor :successes, :probspace
 
-  def initialize(successes=0, attempts=0, probspace=1.0)
-    @successes, @attempts, @probspace = successes, attempts, probspace
+  def initialize(successes=0, probspace=1.0)
+    @successes,  @probspace = successes, probspace
   end
 
-  def self.create_or_reuse(successes=0, attempts=0, probspace=1.0, node_pool = [])
-    node = node_pool.pop
-    return MonsterProbNode.new(successes, attempts, probspace) unless node
-    node.successes = successes
-    node.attempts  = attempts
-    node.probspace = probspace
-    node
-  end
-
-  def gen_children(prob_dist, goal, type_lookup, node_pool = [])
-    # if (prob > 1.0)
-    #   raise ArgumentError, "Can't have a chance (#{prob}) of over 100%."
-    # end
-
-    kidlets = []
-
-    prob_dist.each do |(type, outcome)|
-      new_successes = @successes
-      type_id = type_lookup[type]
-
-      #                           goal[type]                                @successes[type]
-      if type_id && (((goal >> type_id) & 0xFF) > ((@successes >> type_id) & 0xFF))
-        #                 @successes[type] += outcome[:reward]
-        new_successes = [goal, @successes + (outcome[:reward] << type_id)].min
-      end
-
-      kidlets << MonsterProbNode.create_or_reuse(
-        new_successes,
-        @attempts + 1,
-        @probspace * outcome[:prob],
-        node_pool
-      )
-    end
-    return kidlets
-  end
-
-  def ==(other)
-    @successes == other.successes and @attempts == other.attempts
+  def inspect
+    "<PNode: #{@successes}, #{@probspace}>"
   end
 end
 
 class MonsterProbTree
-  attr_accessor :current_ply, :goal
+  attr_accessor :current_ply, :goal, :depth, :discarded_nodes, :prob_dists
 
   def initialize(prob_dists, goal_hash)
+    @depth = 0
     @prob_dists = prob_dists.map(&:to_a)
     @discarded_nodes = []
     # I bitpack this hash, it cut the runtime in half.
@@ -70,23 +35,64 @@ class MonsterProbTree
     end
   end
 
-  # One ply is the result of a single break, not a single hunt here
-  def next_ply
-    current_prob_dist = next_prob_dist
-    future_ply = @current_ply.map do |pnode|
-      pnode.gen_children(current_prob_dist, @goal, @type_lookup, @discarded_nodes)
-    end.flatten
-    @discarded_nodes.push(*@current_ply)
-    @current_ply = merge_dupes(future_ply)
+  def create_or_reuse_node(successes=0, probspace=1.0)
+    node = @discarded_nodes.pop
+    return MonsterProbNode.new(successes, probspace) unless node
+    node.successes = successes
+    node.probspace = probspace
+    node
   end
 
-  def merge_dupes(ply)
-    ply.group_by(&:successes).reduce([]) do |acc, (_, nodes)|
-      nodes.first.probspace = nodes.reduce(0) {|acc, node| acc += node.probspace}
-      @discarded_nodes.push(*nodes[1..-1])
-      acc << nodes.first
-      acc
+  def num_nodes
+    @current_ply.count + @discarded_nodes.count
+  end
+
+  def gen_children(prob_dist, node)
+    # if (prob > 1.0)
+    #   raise ArgumentError, "Can't have a chance (#{prob}) of over 100%."
+    # end
+
+    kidlets = []
+
+    prob_dist.each do |(type, outcome)|
+      new_successes = node.successes
+      type_id = @type_lookup[type]
+
+      #                           goal[type]                                @successes[type]
+      if type_id && (((@goal >> type_id) & 0xFF) > ((node.successes >> type_id) & 0xFF))
+        #                 @successes[type] += outcome[:reward]
+        new_successes = [@goal, node.successes + (outcome[:reward] << type_id)].min
+      end
+
+      kidlets << create_or_reuse_node(
+        new_successes,
+        node.probspace * outcome[:prob],
+      )
     end
+    return kidlets
+  end
+
+  # One ply is the result of a single break, not a single hunt here
+  def next_ply
+    @depth += 1
+    current_prob_dist = next_prob_dist
+    future_ply = @current_ply.reduce({}) do |acc, pnode|
+      kidlets = gen_children(current_prob_dist, pnode)
+      # Merge the duplicate nodes on the next ply as I make them.
+      # This has the added benefit of using the same 5 or so nodes
+      # over and over, as they get pushed and popped on the discard stack
+      kidlets.each do |kidlet|
+        if acc[kidlet.successes]
+          acc[kidlet.successes].probspace += kidlet.probspace
+          @discarded_nodes.push(kidlet)
+        else
+          acc[kidlet.successes] = kidlet
+        end
+      end
+      acc
+    end.values.flatten
+    @discarded_nodes.push(*@current_ply)
+    @current_ply = future_ply
   end
 
   # Gun' go hunting
@@ -125,6 +131,7 @@ end
 
 if __FILE__ == $0
   require 'ruby-prof'
+
   pt = MonsterProbTree.new([
     {
       a: {reward: 1, prob: 0.5},
