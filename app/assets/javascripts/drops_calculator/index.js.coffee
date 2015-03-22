@@ -1,5 +1,18 @@
 class desire.DropCalculator
-  monsterMatcher: (strs) ->
+
+  matchers: {}
+
+  monsterSummaryMatcher: (item_id) =>
+    if !@matchers[item_id]?
+      @matchers[item_id] = new Bloodhound(
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace
+        prefetch: "/items/#{item_id}/monsters"
+      )
+      @matchers[item_id].initialize()
+    @matchers[item_id]
+
+  mainMatcher: (strs) ->
     escapeRegExp = (str) ->
       return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
     (query, callback) ->
@@ -45,6 +58,43 @@ class desire.DropCalculator
           </div>
         ')
 
+  enableMonsterSummarySelector: (item_id) =>
+    @clearMonsterSummarySelector()
+    $('#monster_selector').removeClass('hidden')
+    $('#monster_selector .typeahead').typeahead(
+      {
+        hint: false
+        highlight: true
+        minLength: 1
+      },
+      {
+        name: 'monter_summaries'
+        displayKey: (obj) ->
+          obj['name'] + ' - ' + (obj['prob'] * 100).toFixed(1) + '%'
+        source: @monsterSummaryMatcher(item_id).ttAdapter()
+      }
+    )
+
+  disableMonsterSummarySelector: () ->
+    @clearMonsterSummarySelector()
+    $('#monster_selector').addClass('hidden')
+
+  clearMonsterSummarySelector: () ->
+    $('#monster_selector .typeahead').val('')
+
+
+  loadCalculationView: (monster_id) =>
+    desire.currentMonster = monster_id
+    $.when(
+      $.ajax url: "/monsters/#{monster_id}/breaks", success: (result) =>
+        desire.currentBreakData = result
+        @dropsView.render(parts: result)
+      $.ajax url: "/monsters/#{monster_id}/items", success: (result) =>
+        desire.currentItemData = result
+        @itemsView.render(items: result)
+    ).then(@enableCalculateButton)
+
+
   bind: ->
     @disableCalculateButton()
     @dropsView = new desire.DropsView($('#drop_list'))
@@ -55,7 +105,7 @@ class desire.DropCalculator
       window.location.reload = true
       window.location.href = '/'
 
-    $('#monster_selector .typeahead').typeahead(
+    $('#main_selector .typeahead').typeahead(
       {
         hint: false,
         highlight: true,
@@ -64,24 +114,24 @@ class desire.DropCalculator
       {
         name: 'monsters',
         displayKey: 'name',
-        source: @monsterMatcher(desire.Monsters)
+        source: @mainMatcher(desire.Monsters.concat(desire.Items))
       }
     )
 
     $('.tt-hint').addClass('form-control')
 
-    $('#monster_selector .typeahead').bind('typeahead:selected', (obj, dater, name) =>
-      desire.currentMonster = dater.id
-
-      $.when(
-        $.ajax url: "/monsters/#{dater.id}/breaks", success: (result) =>
-          desire.currentBreakData = result
-          @dropsView.render(parts: result)
-        $.ajax url: "/monsters/#{dater.id}/items", success: (result) =>
-          desire.currentItemData = result
-          @itemsView.render(items: result)
-      ).then(@enableCalculateButton)
+    $('#main_selector .typeahead').bind('typeahead:selected', (obj, dater, name) =>
+      if dater['type'] == 'monster'
+        @disableMonsterSummarySelector()
+        @loadCalculationView(dater.id)
+      else if dater['type'] == 'item'
+        @enableMonsterSummarySelector(dater.id)
     )
+
+    $('#monster_selector .typeahead').bind('typeahead:selected', (obj, dater, name) =>
+      @loadCalculationView(dater.id)
+    )
+
     $('#btn-go').click =>
       @chartView.renderTemplate({})
       $('html, body').animate({

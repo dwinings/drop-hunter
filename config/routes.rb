@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'drops_calculator#index'
 
+  get 'items/:id/monsters'  => 'items#monsters'
   get 'monsters/:id/breaks' => 'monsters#breaks'
   get 'monsters/:id/items' => 'monsters#items'
   get 'probability' => 'probability#index'

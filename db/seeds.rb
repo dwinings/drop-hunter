@@ -36,7 +36,7 @@ def scrape_monster(mon)
     drops_by_method.each do |method, drops|
       b = Break.find_or_create_by(monster: m, name: method)
       drops.each do |drop|
-        i = Item.find_or_create_by(name: drop['name'], rank: rank)
+        i = Item.find_or_create_by(name: drop['name'])
         ItemDropInstance.find_or_create_by(
           monster: m,
           break: b,

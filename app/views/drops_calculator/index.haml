@@ -2,7 +2,13 @@
 .col-sm-10
   .well
     .row.monster-selector-row
-      #monster_selector
+      #main_selector
+        .col-sm-3
+        .col-sm-6
+          %input.form-control.typeahead{type: 'text', placeholder: "Enter Monster or Item"}
+        .col-sm-3
+    .row.monster-selector-row
+      #monster_selector.hidden
         .col-sm-3
         .col-sm-6
           %input.form-control.typeahead{type: 'text', placeholder: "Enter Monster"}
