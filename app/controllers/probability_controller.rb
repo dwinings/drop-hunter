@@ -29,14 +29,30 @@ class ProbabilityController < ApplicationController
           did_timeout = true
         end
       end
-      depth = @ptree.depth
-      breadth = @ptree.current_ply.count
-      nodes = @ptree.num_nodes
+      depth     = @ptree.depth
+      breadth   = @ptree.current_ply.count
+      discarded = @ptree.discarded_nodes.count
+      nodes     = @ptree.num_nodes
+      ratio     = breadth.to_f * 100 / nodes
+      if Rails.env.production?
+        begin
+          ::NewRelic::Agent.add_custom_parameters({
+            tree_depth: depth,
+            tree_breadth: breadth,
+            total_nodes: nodes,
+            discarded_nodes: discarded,
+            node_usage_ratio: ratio,
+            timed_out: did_timeout
+          })
+        rescue Exception => e
+          puts e
+        end
+      end
       Rails.logger.info "Tree depth for query: #{depth}"
       Rails.logger.info "Final Tree breadth for query: #{breadth}"
       Rails.logger.info "Node usage: #{breadth} current, " +
-        "#{@ptree.discarded_nodes.count} discarded, " +
-        "#{@ptree.current_ply.count.to_f * 100 / @ptree.num_nodes}% in ply"
+        "#{discarded} discarded, " +
+        "#{ratio}% in ply"
     else
       Rails.logger.info "Ignoring impossible query."
       possible = false
