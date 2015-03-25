@@ -4,9 +4,11 @@
  <meta name="viewport" content="width=500,user-scalable=no,user-scalable=0">
  <title>Desire Sensor</title>
   <script>
+   <% cache do %>
     window.desire = {}
     desire.Monsters = <%== monsters_json %>
     desire.Items = <%== items_json %>
+   <% end %>
   </script>
   <%= favicon_link_tag 'favicon.png' %>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
