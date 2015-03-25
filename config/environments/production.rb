@@ -3,7 +3,6 @@ Rails.application.configure do
 
   # Code is not reloaded between requests.
   config.cache_classes = true
-  config.cache_store = :dalli_store
 
   client = Dalli::Client.new(
     (ENV["MEMCACHIER_SERVERS"] || "").split(","),
