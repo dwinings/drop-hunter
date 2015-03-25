@@ -5,8 +5,10 @@ class ProbabilityController < ApplicationController
   MAX_RUNTIME = 5
   def index
     @items  = params[:items] || {}
-    @item_set = @items.keys.map(&:to_i)
-    @breaks = params[:breaks].andand.map(&Break.method(:find)) || {}
+    @item_set = Item.find(@items.keys.map(&:to_i))
+    if params[:breaks]
+      @breaks = Break.includes(:item_drop_instances).find(params[:breaks].map(&:to_i))
+    end
     unless impossible_query?
       possible = true
       @ptree = MonsterProbTree.new(probabilities, goals)

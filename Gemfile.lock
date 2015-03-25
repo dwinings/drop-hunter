@@ -14,6 +14,8 @@ GEM
       rack-test (~> 0.6.2)
       rails-dom-testing (~> 1.0, >= 1.0.5)
       rails-html-sanitizer (~> 1.0, >= 1.0.1)
+    actionpack-action_caching (1.1.1)
+      actionpack (>= 4.0.0, < 5.0)
     actionview (4.2.0)
       activesupport (= 4.2.0)
       builder (~> 3.1)
@@ -64,6 +66,7 @@ GEM
     d3-rails (3.5.2)
       railties (>= 3.1)
     daemons (1.2.2)
+    dalli (2.7.4)
     debug_inspector (0.0.2)
     debugger-linecache (1.2.0)
     erubis (2.7.0)
@@ -126,6 +129,8 @@ GEM
       rack
       rake (>= 0.8.1)
     rack (1.6.0)
+    rack-cache (1.2)
+      rack (>= 0.4)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.0)
@@ -215,12 +220,14 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  actionpack-action_caching
   andand
   bootstrap-material-design
   bootstrap-sass
   byebug
   coffee-rails (~> 4.1.0)
   d3-rails
+  dalli
   haml-rails
   hamlbars
   handlebars_assets
@@ -231,6 +238,7 @@ DEPENDENCIES
   mysql2
   newrelic_rpm
   passenger
+  rack-cache
   rails (= 4.2.0)
   rails_12factor
   ruby-prof

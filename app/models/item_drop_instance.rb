@@ -2,7 +2,7 @@ class ItemDropInstance < ActiveRecord::Base
   belongs_to :monster
   belongs_to :item
   belongs_to :break
-  
+
   def as_json(*)
     {
       monster: monster_id,

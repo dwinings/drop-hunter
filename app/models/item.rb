@@ -6,7 +6,7 @@ class Item < ActiveRecord::Base
 
   def monster_summaries
     monsters.map do |m|
-      m.as_json.merge(prob: m.at_least_one_by_item(id))
+      m.as_json.merge(prob: m.at_least_one_by_item(self))
     end
   end
 

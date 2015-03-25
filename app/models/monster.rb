@@ -8,31 +8,27 @@ class Monster < ActiveRecord::Base
     "#{name} (#{Rank.rank_name(rank_id).capitalize})"
   end
 
-  def items
-    super.uniq
-  end
-
-  def at_least_one_by_item(item_id)
-    1.0 - [carve_probs(item_id), capture_probs(item_id)].map do |probs|
+  def at_least_one_by_item(item)
+    1.0 - [carve_probs(item), capture_probs(item)].map do |probs|
       probs.map do |prob|
-        1.0 - prob[item_id][:prob]
+        1.0 - prob[item.id][:prob]
       end.reduce(:*) || 1.0
     end.min
   end
 
-  def capture_probs(item_id)
+  def capture_probs(item)
     breaks.reject do |br|
       br.name == 'Body Carve'
     end.map do |br|
-      br.probabilities([item_id])
+      br.probabilities([item])
     end.flatten.compact
   end
 
-  def carve_probs(item_id)
+  def carve_probs(item)
     breaks.reject do |br|
       br.name == 'Capture'
     end.map do |br|
-      br.probabilities([item_id])
+      br.probabilities([item])
     end.flatten.compact
   end
 

@@ -6,6 +6,7 @@ class Break < ActiveRecord::Base
 
   # This is the main location for adding up the relevant probabilities for drops of a given set of items.
   def probabilities(item_set, opts = {})
+    item_set = item_set.map(&:id)
     drops = item_drop_instances.to_a.select do |drop|
       item_set.include?(drop.item_id)
     end.reduce(nil) do |acc, drop|
