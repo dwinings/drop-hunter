@@ -21,8 +21,16 @@ Rails.application.configure do
   }
 
   config.static_cache_control = "public, max-age=2592000"
+  config.cache_store = :dalli_store,
+    (ENV["MEMCACHIER_SERVERS"] || "").split(","),
+    {
+      :username => ENV["MEMCACHIER_USERNAME"],
+      :password => ENV["MEMCACHIER_PASSWORD"],
+      :failover => true,
+      :socket_timeout => 1.5,
+      :socket_failure_delay => 0.2
+    }
   config.serve_static_files = true
-  config.cache_store = :dalli_store, client
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
