@@ -61,7 +61,8 @@ class MonsterProbTree
       #                           goal[type]                                @successes[type]
       if type_id && (((@goal >> type_id) & 0xFF) > ((node.successes >> type_id) & 0xFF))
         #                 @successes[type] += outcome[:reward]
-        new_successes = [@goal, node.successes + (outcome[:reward] << type_id)].min
+        new_successes = node.successes + (outcome[:reward] << type_id)
+        new_successes = @goal < new_successes ? @goal : new_successes
       end
 
       kidlets << create_or_reuse_node(
@@ -131,6 +132,7 @@ end
 
 if __FILE__ == $0
   require 'ruby-prof'
+  require 'ruby-prof-flamegraph'
 
   pt = MonsterProbTree.new([
     {
@@ -143,9 +145,13 @@ if __FILE__ == $0
 
   RubyProf.start
 
+  t0 = Time.now
   (1..5000).each { |_| pt.next_ply }
+  t_end = Time.now
 
   results = RubyProf.stop
 
-  RubyProf::FlatPrinter.new(results).print(STDOUT)
+  $stderr.puts "Time Elapsed: #{t_end - t0}"
+
+  RubyProf::FlameGraphPrinter.new(results).print(STDOUT)
 end
