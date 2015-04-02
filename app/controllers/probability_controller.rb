@@ -29,11 +29,12 @@ class ProbabilityController < ApplicationController
           did_timeout = true
         end
       end
-      depth     = @ptree.depth
-      breadth   = @ptree.current_ply.count
-      discarded = @ptree.discarded_nodes.count
-      nodes     = @ptree.num_nodes
-      ratio     = breadth.to_f * 100 / nodes
+      depth       = @ptree.depth
+      breadth     = @ptree.current_ply.count
+      discarded   = @ptree.discarded_nodes.count
+      nodes       = @ptree.num_nodes
+      ratio       = breadth.to_f * 100 / nodes
+      cardinality = @ptree.cardinality
       if Rails.env.production?
         begin
           ::NewRelic::Agent.add_custom_parameters({
@@ -42,12 +43,14 @@ class ProbabilityController < ApplicationController
             total_nodes: nodes,
             discarded_nodes: discarded,
             node_usage_ratio: ratio,
+            cardinality: cardinality,
             timed_out: did_timeout
           })
         rescue Exception => e
           puts e
         end
       end
+      Rails.logger.info "Success space size: #{cardinality}"
       Rails.logger.info "Tree depth for query: #{depth}"
       Rails.logger.info "Final Tree breadth for query: #{breadth}"
       Rails.logger.info "Node usage: #{breadth} current, " +

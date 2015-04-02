@@ -48,10 +48,6 @@ class MonsterProbTree
   end
 
   def gen_children(prob_dist, node, new_ply_hash)
-    # if (prob > 1.0)
-    #   raise ArgumentError, "Can't have a chance (#{prob}) of over 100%."
-    # end
-
     prob_dist.each do |(type, outcome)|
       new_successes = node.successes
       type_id = @type_lookup[type]
@@ -86,10 +82,6 @@ class MonsterProbTree
     current_prob_dist = next_prob_dist
     future_ply = @current_ply.reduce({}) do |acc, pnode|
       acc = gen_children(current_prob_dist, pnode, acc)
-      # Merge the duplicate nodes on the next ply as I make them.
-      # This has the added benefit of using the same 5 or so nodes
-      # over and over, as they get pushed and popped on the discard stack
-      acc
     end.values.flatten
     @discarded_nodes.push(*@current_ply)
     @current_ply = future_ply
@@ -110,6 +102,12 @@ class MonsterProbTree
     @current_ply
   end
 
+  def cardinality
+    @type_lookup.reduce(1) do |product, (_, idx)|
+      product * (((@goal >> idx) & 0xFF) + 1)
+    end
+  end
+
   def victorious_nodes
     @current_ply.select(&method(:goal_met?))
   end
@@ -127,30 +125,4 @@ class MonsterProbTree
     @prob_idx += 1
     @prob_dists[@prob_idx-1]
   end
-end
-
-if __FILE__ == $0
-  require 'ruby-prof'
-  require 'ruby-prof-flamegraph'
-
-  pt = MonsterProbTree.new([
-    {
-      a: {reward: 1, prob: 0.5},
-      b: {reward: 2, prob: 0.1},
-      c: {reward: 1, prob: 0.01},
-      failure: {prob: 0.39}
-    }
-  ], {a: 3, b: 6, c: 4})
-
-  RubyProf.start
-
-  t0 = Time.now
-  (1..5000).each { |_| pt.next_ply }
-  t_end = Time.now
-
-  results = RubyProf.stop
-
-  $stderr.puts "Time Elapsed: #{t_end - t0}"
-
-  RubyProf::FlameGraphPrinter.new(results).print(STDOUT)
 end
