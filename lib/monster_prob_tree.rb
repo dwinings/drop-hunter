@@ -47,12 +47,10 @@ class MonsterProbTree
     @current_ply.count + @discarded_nodes.count
   end
 
-  def gen_children(prob_dist, node)
+  def gen_children(prob_dist, node, new_ply_hash)
     # if (prob > 1.0)
     #   raise ArgumentError, "Can't have a chance (#{prob}) of over 100%."
     # end
-
-    kidlets = []
 
     prob_dist.each do |(type, outcome)|
       new_successes = node.successes
@@ -65,12 +63,21 @@ class MonsterProbTree
         new_successes = @goal < new_successes ? @goal : new_successes
       end
 
-      kidlets << create_or_reuse_node(
+      kidlet = create_or_reuse_node(
         new_successes,
         node.probspace * outcome[:prob],
       )
+
+      # Doing the node dedup here saves a lot of time, rather than iterating
+      # over the kids again after calling gen_children.
+      if new_ply_hash[kidlet.successes]
+        new_ply_hash[kidlet.successes].probspace += kidlet.probspace
+        @discarded_nodes.push(kidlet)
+      else
+        new_ply_hash[kidlet.successes] = kidlet
+      end
     end
-    return kidlets
+    return new_ply_hash
   end
 
   # One ply is the result of a single break, not a single hunt here
@@ -78,18 +85,10 @@ class MonsterProbTree
     @depth += 1
     current_prob_dist = next_prob_dist
     future_ply = @current_ply.reduce({}) do |acc, pnode|
-      kidlets = gen_children(current_prob_dist, pnode)
+      acc = gen_children(current_prob_dist, pnode, acc)
       # Merge the duplicate nodes on the next ply as I make them.
       # This has the added benefit of using the same 5 or so nodes
       # over and over, as they get pushed and popped on the discard stack
-      kidlets.each do |kidlet|
-        if acc[kidlet.successes]
-          acc[kidlet.successes].probspace += kidlet.probspace
-          @discarded_nodes.push(kidlet)
-        else
-          acc[kidlet.successes] = kidlet
-        end
-      end
       acc
     end.values.flatten
     @discarded_nodes.push(*@current_ply)
