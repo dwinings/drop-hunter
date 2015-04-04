@@ -18,9 +18,11 @@
 </head>
 <body>
 
-<%= render 'layouts/nav' %>
+  <%= render 'layouts/nav' %>
 
-<%= yield %>
+  <%= yield %>
+
+  <%= render 'layouts/footer' %>
 
 <%= stylesheet_link_tag 'bootstrap-material', media: 'all', 'data-turbo-links-track' => true %>
 </body>

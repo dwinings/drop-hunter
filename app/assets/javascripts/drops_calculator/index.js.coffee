@@ -60,7 +60,7 @@ class desire.DropCalculator
 
   enableMonsterSummarySelector: (item_id) =>
     @clearMonsterSummarySelector()
-    $('#monster_selector').removeClass('hidden')
+    $('#monster_selector').parents('.monster-selector-row').removeClass('hidden')
     $('#monster_selector .typeahead').typeahead('destroy')
     $('#monster_selector .typeahead').typeahead(
       {
@@ -78,7 +78,7 @@ class desire.DropCalculator
 
   disableMonsterSummarySelector: () ->
     @clearMonsterSummarySelector()
-    $('#monster_selector').addClass('hidden')
+    $('#monster_selector').parents('.monster-selector-row').addClass('hidden')
 
   clearMonsterSummarySelector: () ->
     $('#monster_selector .typeahead').val('')
