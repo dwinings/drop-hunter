@@ -1,3 +1,4 @@
+= render 'layouts/globals'
 .col-sm-1
 .col-sm-10.main-body
   .well
@@ -11,7 +12,7 @@
       #monster_selector
         .col-sm-3
         .col-sm-6
-          %input.form-control.typeahead{type: 'text', placeholder: "Enter Monster"}
+          %input{type: 'hidden', style: 'width: 100%;'}
         .col-sm-3
     .row.items-chooser
       #item_list

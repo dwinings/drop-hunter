@@ -17,6 +17,7 @@ gem 'httparty'
 gem 'andand'
 gem 'bootstrap-material-design'
 gem 'twitter-typeahead-rails'
+gem 'select2-rails'
 gem 'hamlbars'
 gem 'handlebars_assets'
 # Use Uglifier as compressor for JavaScript assets

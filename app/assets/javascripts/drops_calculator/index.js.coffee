@@ -1,29 +1,15 @@
 class desire.DropCalculator
 
-  matchers: {}
-
-  monsterSummaryMatcher: (item_id) =>
-    if !@matchers[item_id]?
-      @matchers[item_id] = new Bloodhound(
+  mainMatcher: (strs) ->
+    unless @matcher?
+      @matcher = new Bloodhound(
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
         queryTokenizer: Bloodhound.tokenizers.whitespace
-        prefetch: "/items/#{item_id}/monsters"
+        local: desire.Monsters.concat(desire.Items)
+        limit: 20
       )
-      @matchers[item_id].initialize()
-    @matchers[item_id]
-
-  mainMatcher: (strs) ->
-    escapeRegExp = (str) ->
-      return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
-    (query, callback) ->
-      matches = [];
-      substrRegex = new RegExp(escapeRegExp(query), 'i')
-
-      $.each strs, (i, str) ->
-        if (substrRegex.test(str['name']))
-          matches.push(str)
-
-      callback(matches)
+      @matcher.initialize()
+    @matcher.ttAdapter()
 
   enableCalculateButton: ->
     $('#btn-go').removeClass('disabled')
@@ -61,27 +47,27 @@ class desire.DropCalculator
   enableMonsterSummarySelector: (item_id) =>
     @clearMonsterSummarySelector()
     $('#monster_selector').parents('.monster-selector-row').removeClass('hidden')
-    $('#monster_selector .typeahead').typeahead('destroy')
-    $('#monster_selector .typeahead').typeahead(
-      {
-        hint: false
-        highlight: true
-        minLength: 1
-      },
-      {
-        name: 'monter_summaries'
-        displayKey: (obj) ->
-          obj['name'] + ' - ' + (obj['prob'] * 100).toFixed(1) + '%'
-        source: @monsterSummaryMatcher(item_id).ttAdapter()
-      }
-    )
-
+    $('#monster_selector input').select2('destroy')
+    $.ajax
+      url: "/items/#{item_id}/monsters"
+      dataType: 'json'
+      success: (data) =>
+        $('#monster_selector input').select2
+          data: {results: data, text: 'name'}
+          mininumInputLength: 0
+          placeholder: 'Select Monster'
+          formatSelection: (datum) ->
+            datum['name'] + ' - ' + (datum['prob'] * 100).toFixed(1) + '%'
+          formatResult: (datum) ->
+            datum['name'] + ' - ' + (datum['prob'] * 100).toFixed(1) + '%'
+        $('#monster_selector input').select2('open')
+ 
   disableMonsterSummarySelector: () ->
     @clearMonsterSummarySelector()
     $('#monster_selector').parents('.monster-selector-row').addClass('hidden')
 
   clearMonsterSummarySelector: () ->
-    $('#monster_selector .typeahead').val('')
+    $('#monster_selector input').select2('data', null)
 
 
   loadCalculationView: (monster_id) =>
@@ -115,7 +101,7 @@ class desire.DropCalculator
       {
         name: 'monsters',
         displayKey: 'name',
-        source: @mainMatcher(desire.Monsters.concat(desire.Items))
+        source: @mainMatcher()
       }
     )
 
@@ -129,8 +115,8 @@ class desire.DropCalculator
         @enableMonsterSummarySelector(dater.id)
     )
 
-    $('#monster_selector .typeahead').bind('typeahead:selected', (obj, dater, name) =>
-      @loadCalculationView(dater.id)
+    $('#monster_selector input').on('change', (e) =>
+      @loadCalculationView(e.added.id)
     )
 
     $('#btn-go').click =>
@@ -161,5 +147,7 @@ Handlebars.registerHelper 'formatPercent', (f) ->
 
 desire.App = new desire.DropCalculator()
 
-$ ->
+$(window).load( ->
+  initGlobals();
   desire.App.bind()
+)

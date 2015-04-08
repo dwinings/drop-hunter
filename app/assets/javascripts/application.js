@@ -15,6 +15,7 @@
 //= require bootstrap-sprockets
 //= require bootstrap-material-design
 //= require twitter/typeahead
+//= require select2
 //= require handlebars
 //= require spin
 //= require jquery.spin
@@ -22,4 +23,3 @@
 //= require lodash
 //= require turbolinks
 //= require_tree .
-
