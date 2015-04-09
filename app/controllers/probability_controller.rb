@@ -7,7 +7,7 @@ class ProbabilityController < ApplicationController
     @items  = params[:items] || {}
     @item_set = Item.find(@items.keys.map(&:to_i))
     if params[:breaks]
-      @breaks = Break.includes(:item_drop_instances).find(params[:breaks].map(&:to_i))
+      @breaks = Break.includes(:break_drop_instances).find(params[:breaks].map(&:to_i))
     end
     unless impossible_query?
       possible = true

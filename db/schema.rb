@@ -11,7 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150304032316) do
+ActiveRecord::Schema.define(version: 20150409021617) do
+
+  create_table "break_drop_instances", force: :cascade do |t|
+    t.integer "monster_id",  limit: 4
+    t.integer "break_id",    limit: 4
+    t.integer "item_id",     limit: 4
+    t.integer "quantity",    limit: 4
+    t.float   "probability", limit: 24
+  end
+
+  add_index "break_drop_instances", ["break_id"], name: "index_break_drop_instances_on_break_id", using: :btree
+  add_index "break_drop_instances", ["item_id"], name: "index_break_drop_instances_on_item_id", using: :btree
+  add_index "break_drop_instances", ["monster_id"], name: "index_break_drop_instances_on_monster_id", using: :btree
 
   create_table "breaks", force: :cascade do |t|
     t.integer  "monster_id", limit: 4
@@ -21,18 +33,6 @@ ActiveRecord::Schema.define(version: 20150304032316) do
   end
 
   add_index "breaks", ["monster_id"], name: "index_breaks_on_monster_id", using: :btree
-
-  create_table "item_drop_instances", force: :cascade do |t|
-    t.integer "monster_id",  limit: 4
-    t.integer "break_id",    limit: 4
-    t.integer "item_id",     limit: 4
-    t.integer "quantity",    limit: 4
-    t.float   "probability", limit: 24
-  end
-
-  add_index "item_drop_instances", ["break_id"], name: "index_item_drop_instances_on_break_id", using: :btree
-  add_index "item_drop_instances", ["item_id"], name: "index_item_drop_instances_on_item_id", using: :btree
-  add_index "item_drop_instances", ["monster_id"], name: "index_item_drop_instances_on_monster_id", using: :btree
 
   create_table "items", force: :cascade do |t|
     t.integer  "rank_id",    limit: 4
@@ -46,6 +46,37 @@ ActiveRecord::Schema.define(version: 20150304032316) do
     t.datetime "updated_at",               null: false
     t.text     "name",       limit: 65535
     t.integer  "rank_id",    limit: 4
+  end
+
+  create_table "quest_drop_groups", force: :cascade do |t|
+    t.string   "slot",       limit: 255
+    t.integer  "quest_id",   limit: 4
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "quest_drop_groups", ["quest_id"], name: "index_quest_drop_groups_on_quest_id", using: :btree
+
+  create_table "quest_drop_instances", force: :cascade do |t|
+    t.integer  "quest_id",            limit: 4
+    t.integer  "item_id",             limit: 4
+    t.integer  "quest_drop_group_id", limit: 4
+    t.integer  "quantity",            limit: 4
+    t.decimal  "probability",                   precision: 10
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
+
+  add_index "quest_drop_instances", ["item_id"], name: "index_quest_drop_instances_on_item_id", using: :btree
+  add_index "quest_drop_instances", ["quest_drop_group_id"], name: "index_quest_drop_instances_on_quest_drop_group_id", using: :btree
+  add_index "quest_drop_instances", ["quest_id"], name: "index_quest_drop_instances_on_quest_id", using: :btree
+
+  create_table "quests", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "target",     limit: 255
+    t.integer  "rank_id",    limit: 4
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "ranks", force: :cascade do |t|

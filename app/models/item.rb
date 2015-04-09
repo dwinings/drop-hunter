@@ -1,7 +1,8 @@
 class Item < ActiveRecord::Base
-  has_many :item_drop_instances
-  has_many :monsters, -> { uniq }, through: :item_drop_instances
-  has_many :breaks, -> { uniq }, through: :item_drop_instances
+  has_many :break_drop_instances
+  has_many :quest_drop_instances
+  has_many :monsters, -> { uniq }, through: :break_drop_instances
+  has_many :breaks, -> { uniq }, through: :break_drop_instances
   belongs_to :rank
 
   def monster_summaries

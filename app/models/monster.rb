@@ -1,7 +1,7 @@
 class Monster < ActiveRecord::Base
   has_many :breaks
-  has_many :item_drop_instances
-  has_many :items, -> { uniq }, through: :item_drop_instances
+  has_many :break_drop_instances
+  has_many :items, -> { uniq }, through: :break_drop_instances
   belongs_to :rank
 
   def qualified_name

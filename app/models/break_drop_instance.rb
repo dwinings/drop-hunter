@@ -1,4 +1,4 @@
-class ItemDropInstance < ActiveRecord::Base
+class BreakDropInstance < ActiveRecord::Base
   belongs_to :monster
   belongs_to :item
   belongs_to :break

@@ -1,13 +1,13 @@
 class Break < ActiveRecord::Base
   belongs_to :monster
-  has_many :item_drop_instances
-  has_many :items, through: :item_drop_instances
+  has_many :break_drop_instances
+  has_many :items, through: :break_drop_instances
 
 
   # This is the main location for adding up the relevant probabilities for drops of a given set of items.
   def probabilities(item_set, opts = {})
     item_set = item_set.map(&:id)
-    drops = item_drop_instances.to_a.select do |drop|
+    drops = break_drop_instances.to_a.select do |drop|
       item_set.include?(drop.item_id)
     end.reduce(nil) do |acc, drop|
       acc ||= {}
@@ -83,7 +83,7 @@ class Break < ActiveRecord::Base
       id: id,
       name: name,
       monster: monster_id,
-      drops: item_drop_instances
+      drops: break_drop_instances
     }
   end
 end
