@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: monsters
+#
+#  id         :integer          not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  name       :text(65535)
+#  rank_id    :integer
+#
+
 class Monster < ActiveRecord::Base
   has_many :breaks
   has_many :break_drop_instances
