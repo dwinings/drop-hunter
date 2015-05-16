@@ -50,18 +50,24 @@ class MonsterProbTree
   def gen_children(prob_dist, node, new_ply_hash)
     prob_dist.each do |(type, outcome)|
       new_successes = node.successes
+      new_probspace = node.probspace * outcome[:prob]
       type_id = @type_lookup[type]
 
-      #                           goal[type]                                @successes[type]
-      if type_id && (((@goal >> type_id) & 0xFF) > ((node.successes >> type_id) & 0xFF))
-        #                 @successes[type] += outcome[:reward]
-        new_successes = node.successes + (outcome[:reward] << type_id)
-        new_successes = @goal < new_successes ? @goal : new_successes
+      if type_id
+        goal_of_type      = ((@goal          >> type_id) & 0xFF)
+        successes_of_type = ((node.successes >> type_id) & 0xFF)
+        if goal_of_type > successes_of_type
+          reward_of_type = outcome[:reward]
+          if successes_of_type + reward_of_type > goal_of_type
+            reward_of_type = goal_of_type - successes_of_type
+          end
+          new_successes += (reward_of_type << type_id)
+        end
       end
 
       kidlet = create_or_reuse_node(
         new_successes,
-        node.probspace * outcome[:prob],
+        new_probspace
       )
 
       # Doing the node dedup here saves a lot of time, rather than iterating
@@ -73,7 +79,7 @@ class MonsterProbTree
         new_ply_hash[kidlet.successes] = kidlet
       end
     end
-    return new_ply_hash
+    new_ply_hash
   end
 
   # One ply is the result of a single break, not a single hunt here

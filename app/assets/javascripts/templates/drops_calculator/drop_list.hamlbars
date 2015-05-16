@@ -9,7 +9,7 @@
               %input.check-box{type: 'checkbox', name: hb('name'), breakid: hb('id')}
               %label.drop-expand-btn{type: 'checkbox', for: hb('name'), aria: {label: 'Expand'}}
                 = hb 'name'
-              = hb 'ifValue name value="Shiny Drops"' do
+              = hb 'ifValue name value="Shiny Drop"' do
                 %input.shiny-input.number-input.col-md-1.form-control{type:'number', placeholder: 2, max: 5, min: 0, name: hb('name')}
             %span.glyphicon.glyphicon-triangle-right{aria: {hidden: 'true'}}
           .part-group-expander
