@@ -1,3 +1,9 @@
+GIT
+  remote: http://github.com/dwinings/rb-probability-engine.git
+  revision: ae951421f84a8d64e970592052b1a0dcf4009a94
+  specs:
+    probability-engine (0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -243,6 +249,7 @@ DEPENDENCIES
   mysql2
   newrelic_rpm
   passenger
+  probability-engine!
   rack-cache
   rails (= 4.2.0)
   rails_12factor
