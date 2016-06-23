@@ -1,57 +1,58 @@
 namespace :db do
-  desc "Regenerate seeds file"
-  task :generate_seeds => :environment do
-    require 'csv'
+  namespace :mh4u do
+    desc "Regenerate seeds file"
+    task :generate_seeds => :environment do
+      require 'csv'
 
-    BREAK_DROP_INSTANCES_QUERY = "select monsters._id, items._id, hunting_rewards.rank, hunting_rewards.condition, hunting_rewards.stack_size, hunting_rewards.percentage from monsters join hunting_rewards on hunting_rewards.monster_id = monsters._id join items on hunting_rewards.item_id = items._id where hunting_rewards.percentage > 0 order by monsters.name desc;"
-    MONSTERS_QUERY = "select distinct monsters._id, monsters.name, rank from hunting_rewards left join monsters on hunting_rewards.monster_id = monsters._id"
-    ITEMS_QUERY = 'select distinct items._id, items.name from hunting_rewards left join items on hunting_rewards.item_id = items._id'
-    BREAKS_QUERY = 'select distinct monsters._id, rank, condition from hunting_rewards left join monsters on hunting_rewards.monster_id = monsters._id;'
-    QUESTS_QUERY = 'select distinct quests._id, quests.name, quests.hub, quests.stars, quests.goal from quests;'
-    QUESTS_DROP_GROUP_QUERY = 'select distinct quest_id, reward_slot from quest_rewards;'
-    QUESTS_DROP_INSTANCES_QUERY = 'select quest_id, reward_slot, item_id, stack_size, percentage from quest_rewards;'
+      break_drop_instances_query = "select monsters._id, items._id, hunting_rewards.rank, hunting_rewards.condition, hunting_rewards.stack_size, hunting_rewards.percentage from monsters join hunting_rewards on hunting_rewards.monster_id = monsters._id join items on hunting_rewards.item_id = items._id where hunting_rewards.percentage > 0 order by monsters.name desc;"
+      monsters_query = "select distinct monsters._id, monsters.name, rank from hunting_rewards left join monsters on hunting_rewards.monster_id = monsters._id"
+      items_query = 'select distinct items._id, items.name from hunting_rewards left join items on hunting_rewards.item_id = items._id'
+      breaks_query = 'select distinct monsters._id, rank, condition from hunting_rewards left join monsters on hunting_rewards.monster_id = monsters._id;'
+      quests_query = 'select distinct quests._id, quests.name, quests.hub, quests.stars, quests.goal from quests;'
+      quests_drop_group_query = 'select distinct quest_id, reward_slot from quest_rewards;'
+      quests_drop_instances_query = 'select quest_id, reward_slot, item_id, stack_size, percentage from quest_rewards;'
 
-    DB_FILE = "#{Rails.root.to_s}/db/mh4u.db"
-    OUTPUT  = File.open("#{Rails.root.to_s}/db/seeds.rb", "w")
-    SQLITE_CMD = "sqlite3 #{DB_FILE} -csv "
+      output  = File.open("#{Rails.root.to_s}/db/seeds.rb", "a")
+      @db_file = "#{Rails.root.to_s}/db/mh4u.db"
+      @sqlite_cmd = "sqlite3 #{@db_file} -csv "
 
-    def run(query)
-      `#{SQLITE_CMD}"#{query}"`
-    end
-
-    def quest_rank(hub, stars)
-      case hub.downcase
-      when 'caravan' then
-        if stars <= 6
-          return 1
-        else
-          return 2
-        end
-      when 'guild', 'event' then
-        if stars <= 3
-          return 1
-        elsif stars <= 7
-          return 2
-        else
-          return 3
-        end
-      else
-        raise Error.new('Unknown quest hub!')
+      def run(query)
+        `#{@sqlite_cmd}"#{query}"`
       end
-    end
 
-    def real_rank(raw_rank)
-      case raw_rank
-      when "LR"
-        1
-      when "HR"
-        2
-      when "G"
-        3
+      def quest_rank(hub, stars)
+        case hub.downcase
+        when 'caravan' then
+          if stars <= 6
+            return 1
+          else
+            return 2
+          end
+        when 'guild', 'event' then
+          if stars <= 3
+            return 1
+          elsif stars <= 7
+            return 2
+          else
+            return 3
+          end
+        else
+          raise Error.new('Unknown quest hub!')
+        end
       end
-    end
 
-    OUTPUT.puts <<-EOF
+      def real_rank(raw_rank)
+        case raw_rank
+        when "LR"
+          1
+        when "HR"
+          2
+        when "G"
+          3
+        end
+      end
+
+      output.puts <<-EOF
 monsters_lookup = {}
 items_lookup = {}
 breaks_lookup = {}
@@ -60,34 +61,41 @@ quest_groups_lookup = {}
 break_drop_instances = []
 quest_drop_instances = []
 
-Rank.create(id: 1, name: "Low")
-Rank.create(id: 2, name: "High")
-Rank.create(id: 3, name: "G")
-EOF
+MonsterSet.create(id: 1, name: "Monster Hunter 4 Ultimate")
+Rank.create(id: 1, monster_set_id: 1, name: "Low")
+Rank.create(id: 2, monster_set_id: 1, name: "High")
+Rank.create(id: 3, monster_set_id: 1, name: "G")
+      EOF
 
-    CSV.parse(run(MONSTERS_QUERY)) do |(m_id, name, raw_rank)|
-      OUTPUT.puts "monsters_lookup[#{[m_id.to_i, real_rank(raw_rank)]}] = Monster.new(name: \"#{name}\", rank_id: #{real_rank(raw_rank)})"
-    end
+      monsters_count = 0
+      CSV.parse(run(monsters_query)) do |(m_id, name, raw_rank)|
+        monsters_count += 1
+        output.puts "monsters_lookup[#{[m_id.to_i, real_rank(raw_rank)]}] = Monster.new(name: \"#{name}\", rank_id: #{real_rank(raw_rank)})"
+      end
 
-    CSV.parse(run(ITEMS_QUERY)) do |(i_id, name)|
-      OUTPUT.puts "items_lookup[#{i_id}] = Item.new(name: \"#{name}\")"
-    end
+      items_count = 0
+      CSV.parse(run(items_query)) do |(i_id, name)|
+        items_count += 1
+        output.puts "items_lookup[#{i_id}] = Item.new(name: \"#{name}\")"
+      end
 
-    CSV.parse(run(BREAKS_QUERY)) do |(m_id, raw_rank, method)|
-      OUTPUT.puts "breaks_lookup[[#{m_id}, #{real_rank(raw_rank)}, \"#{method}\"]] = Break.new(name: \"#{method}\", monster: monsters_lookup[[#{m_id}, #{real_rank(raw_rank)}]])"
-    end
+      CSV.parse(run(breaks_query)) do |(m_id, raw_rank, method)|
+        output.puts "breaks_lookup[[#{m_id}, #{real_rank(raw_rank)}, \"#{method}\"]] = Break.new(name: \"#{method}\", monster: monsters_lookup[[#{m_id}, #{real_rank(raw_rank)}]])"
+      end
 
-    CSV.parse(run(QUESTS_QUERY)) do |(q_id, name, hub, stars, goal)|
-      rank = quest_rank(hub, stars.to_i)
-      OUTPUT.puts "quests_lookup[#{q_id}] = Quest.new(name: %q[#{name}], target: %q[#{goal}], rank_id: #{rank})"
-    end
+      quests_count = 0
+      CSV.parse(run(quests_query)) do |(q_id, name, hub, stars, goal)|
+        quests_count += 1
+        rank = quest_rank(hub, stars.to_i)
+        output.puts "quests_lookup[#{q_id}] = Quest.new(name: %q[#{name}], target: %q[#{goal}], rank_id: #{rank})"
+      end
 
-    CSV.parse(run(QUESTS_DROP_GROUP_QUERY)) do |(q_id, slot)|
-      OUTPUT.puts "quest_groups_lookup[[#{q_id}, \"#{slot}\"]] = QuestDropGroup.new(quest: quests_lookup[#{q_id}], slot: \"#{slot}\")"
-    end
+      CSV.parse(run(quests_drop_group_query)) do |(q_id, slot)|
+        output.puts "quest_groups_lookup[[#{q_id}, \"#{slot}\"]] = QuestDropGroup.new(quest: quests_lookup[#{q_id}], slot: \"#{slot}\")"
+      end
 
-    CSV.parse(run(QUESTS_DROP_INSTANCES_QUERY)) do |(q_id, slot, i_id, qty, prob)|
-      OUTPUT.puts <<-EOF
+      CSV.parse(run(quests_drop_instances_query)) do |(q_id, slot, i_id, qty, prob)|
+        output.puts <<-EOF
 quest_drop_instances << QuestDropInstance.new(
   quest: quests_lookup[#{q_id}],
   item: items_lookup[#{i_id}],
@@ -96,12 +104,13 @@ quest_drop_instances << QuestDropInstance.new(
   probability: #{prob.to_i / 100.0}
 )
 
-EOF
-    end
+        EOF
+      end
 
-    CSV.parse(run(BREAK_DROP_INSTANCES_QUERY)) do |(m_id, i_id, raw_rank, method, qty, prob)|
-      rank = real_rank(raw_rank)
-      OUTPUT.puts <<-EOF
+      CSV.parse(run(break_drop_instances_query)) do |(m_id, i_id, raw_rank, method, qty, prob)|
+        rank = real_rank(raw_rank)
+        output.puts <<-EOF
+
 break_drop_instances << BreakDropInstance.new(
   monster: monsters_lookup[[#{m_id}, #{rank}]],
   item: items_lookup[#{i_id}],
@@ -109,10 +118,11 @@ break_drop_instances << BreakDropInstance.new(
   quantity: #{qty},
   probability: #{prob.to_i / 100.0}
 )
-      EOF
-    end
 
-    OUTPUT.puts <<-EOF
+        EOF
+      end
+
+      output.puts <<-EOF
 ActiveRecord::Base.transaction do
   monsters_lookup.values.map(&:save)
   items_lookup.values.map(&:save)
@@ -122,7 +132,16 @@ ActiveRecord::Base.transaction do
   break_drop_instances.map(&:save)
   quest_drop_instances.map(&:save)
 end
-    EOF
 
+      EOF
+      output.flush
+
+      Rails.logger.info <<STATS
+Generated seeds for MH4U database at #{@db_file}
+  Monsters: #{monsters_count}
+  Items:    #{items_count}
+  Quests:   #{quests_count}
+STATS
+    end
   end
 end

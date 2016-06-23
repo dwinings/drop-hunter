@@ -11,6 +11,7 @@
 #
 
 class Quest < ActiveRecord::Base
+  delegate :monster_set, :to => :rank
   belongs_to :rank
 
   def as_json(*)

@@ -13,6 +13,7 @@ class Monster < ActiveRecord::Base
   has_many :breaks
   has_many :break_drop_instances
   has_many :items, -> { uniq }, through: :break_drop_instances
+  delegate :monster_set, :to => :rank
   belongs_to :rank
 
   def qualified_name

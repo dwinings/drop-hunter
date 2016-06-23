@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150409021617) do
+ActiveRecord::Schema.define(version: 20160618135556) do
 
   create_table "break_drop_instances", force: :cascade do |t|
     t.integer "monster_id",  limit: 4
@@ -39,6 +39,10 @@ ActiveRecord::Schema.define(version: 20150409021617) do
     t.string   "name",       limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_table "monster_sets", force: :cascade do |t|
+    t.string "name", limit: 255
   end
 
   create_table "monsters", force: :cascade do |t|
@@ -72,17 +76,19 @@ ActiveRecord::Schema.define(version: 20150409021617) do
   add_index "quest_drop_instances", ["quest_id"], name: "index_quest_drop_instances_on_quest_id", using: :btree
 
   create_table "quests", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.string   "target",     limit: 255
-    t.integer  "rank_id",    limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string   "name",           limit: 255
+    t.string   "target",         limit: 255
+    t.integer  "rank_id",        limit: 4
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.integer  "monster_set_id", limit: 4
   end
 
   create_table "ranks", force: :cascade do |t|
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.string   "name",       limit: 255
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.string   "name",           limit: 255
+    t.integer  "monster_set_id", limit: 4
   end
 
 end

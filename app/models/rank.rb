@@ -9,17 +9,20 @@
 #
 
 class Rank < ActiveRecord::Base
+  belongs_to :monster_set
+
   def monsters
     Monster.where(rank: self)
   end
 
   def self.rank_name(id)
-    case id
+    # Seems legit.
+    case id % 3
     when 1
       "Low"
     when 2
       "High"
-    when 3
+    when 0
       "G"
     end
   end

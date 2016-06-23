@@ -9,17 +9,23 @@ class ProbabilityController < ApplicationController
     if params[:breaks]
       @breaks = Break.includes(:break_drop_instances).find(params[:breaks].map(&:to_i))
     end
-    unless impossible_query?
+    did_timeout = false
+
+    if impossible_query?
+      Rails.logger.info 'Ignoring impossible query.'
+      possible = false
+      @results = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    else
       possible = true
       @ptree = ProbabilityEngine::Native::ProbTree.new(probabilities, goals)
       if @ptree.invalid?
         render json: {timed_out: true, possible: possible, results: [0.0] * 5}
         return
       end
-      @results = [0.0]
-      prob = 0
+      @results   = [0.0]
+      prob       = 0
       iterations = 0
-      did_timeout = false
+      t1         = Time.now
       Timeout::timeout(MAX_RUNTIME, Timeout::Error) do
         begin
           while prob < 0.9 && iterations < MAX_ITERATIONS
@@ -33,33 +39,32 @@ class ProbabilityController < ApplicationController
           did_timeout = true
         end
       end
-      depth       = @ptree.depth
+      t2 = Time.now
+
+      query_time_ms = (t2 - t1) * 1000
+      depth = @ptree.depth
       cardinality = @ptree.cardinality
       if Rails.env.production?
         begin
-          ::NewRelic::Agent.add_custom_parameters({
+          ::NewRelic::Agent.add_custom_parameters(
             tree_depth: depth,
             cardinality: cardinality,
-            timed_out: did_timeout
-          })
+            timed_out: did_timeout,
+            query_time_ms: query_time_ms
+          )
         rescue Exception => e
           puts e
         end
       end
       Rails.logger.info "Success space size: #{cardinality}"
       Rails.logger.info "Tree depth for query: #{depth}"
-    else
-      Rails.logger.info "Ignoring impossible query."
-      possible = false
-      @results = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     end
 
-    resp = {
+    render json: {
       timed_out: did_timeout,
       possible: possible,
       results: @results
-    }
-    render json: resp.to_json
+    }.to_json
   end
 
   def goals
@@ -73,7 +78,6 @@ class ProbabilityController < ApplicationController
     @probabilities ||= (
       @breaks.map {|br| br.probabilities(@item_set, params) }.flatten.compact
     )
-    @probabilities
   end
 
   def impossible_query?
