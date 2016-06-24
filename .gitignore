@@ -16,4 +16,5 @@
 !/log/.keep
 /.projectile
 /tmp
+/.idea/*
 #.*

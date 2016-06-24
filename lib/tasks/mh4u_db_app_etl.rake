@@ -61,7 +61,7 @@ quest_groups_lookup = {}
 break_drop_instances = []
 quest_drop_instances = []
 
-MonsterSet.create(id: 1, name: "Monster Hunter 4 Ultimate")
+MonsterSet.create(id: 1, name: "Monster Hunter 4 Ultimate", url: 'mh4u', enabled: true, default: true)
 Rank.create(id: 1, monster_set_id: 1, name: "Low")
 Rank.create(id: 2, monster_set_id: 1, name: "High")
 Rank.create(id: 3, monster_set_id: 1, name: "G")
@@ -76,7 +76,7 @@ Rank.create(id: 3, monster_set_id: 1, name: "G")
       items_count = 0
       CSV.parse(run(items_query)) do |(i_id, name)|
         items_count += 1
-        output.puts "items_lookup[#{i_id}] = Item.new(name: \"#{name}\")"
+        output.puts "items_lookup[#{i_id}] = Item.new(name: \"#{name}\", rank_id: 1)"
       end
 
       CSV.parse(run(breaks_query)) do |(m_id, raw_rank, method)|

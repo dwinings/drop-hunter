@@ -147,7 +147,9 @@ Handlebars.registerHelper 'formatPercent', (f) ->
 
 desire.App = new desire.DropCalculator()
 
-$(window).load( ->
+onLoad = ->
   initGlobals();
   desire.App.bind()
-)
+
+$(window).load(onLoad)
+$(document).on('page:load', onLoad)

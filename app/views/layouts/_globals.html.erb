@@ -1,5 +1,5 @@
 <script>
-  <% cache do %>
+  <% cache("monster_set:#{params[:id]}") do %>
     window.initGlobals = function() {
       desire.Monsters = <%== monsters_json %>;
       desire.Quests = <%== quests_json %>;

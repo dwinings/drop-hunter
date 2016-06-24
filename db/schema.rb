@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160618135556) do
+ActiveRecord::Schema.define(version: 20160623062937) do
 
   create_table "break_drop_instances", force: :cascade do |t|
     t.integer "monster_id",  limit: 4
@@ -42,7 +42,10 @@ ActiveRecord::Schema.define(version: 20160618135556) do
   end
 
   create_table "monster_sets", force: :cascade do |t|
-    t.string "name", limit: 255
+    t.string  "name",    limit: 255
+    t.boolean "enabled", limit: 1
+    t.boolean "default", limit: 1
+    t.string  "url",     limit: 255
   end
 
   create_table "monsters", force: :cascade do |t|
