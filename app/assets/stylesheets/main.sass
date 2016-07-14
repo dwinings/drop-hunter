@@ -24,15 +24,22 @@ $transition-duration: 0.3s
   margin-right: 15%
   font-weight: 700
 
-.navbar
-  height: 50px
-  position: fixed
-  z-index: 100
-  width: 100%
+@media screen and (min-width: 768px)
+  .navbar
+    height: 50px
+    position: fixed
+    z-index: 100
+    width: 100%
 
-.main-body
-  margin-top: 70px
-  margin-bottom: 50px
+@media screen and (min-width: 768px)
+  .main-body
+    margin-top: 70px
+    margin-bottom: 50px
+
+@media screen and (max-width: 767px)
+  .main-body
+    margin-top: 20px
+    margin-bottom: 50px
 
 .footer
   width: 100%

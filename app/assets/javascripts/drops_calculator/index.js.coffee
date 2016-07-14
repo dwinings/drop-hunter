@@ -67,7 +67,9 @@ class desire.DropCalculator
     $('#monster_selector').parents('.monster-selector-row').addClass('hidden')
 
   clearMonsterSummarySelector: () ->
-    $('#monster_selector input').select2('data', null)
+    el = $('#monster_selector input')
+    if (typeof el.select2) != undefined
+      $('#monster_selector input').select2('data', null)
 
 
   loadCalculationView: (monster_id) =>
