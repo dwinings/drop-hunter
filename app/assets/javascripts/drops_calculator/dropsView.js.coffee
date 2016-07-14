@@ -51,20 +51,22 @@ class desire.DropsView
     expanderIcon = $('.glyphicon-triangle-right', container)
 
   onCheckboxChange: (e) =>
+    # Disable this for now, since MHGen has multiple capture/carve groups.
+
+    # el = $(e.target)
     # I know, body carve and capture should be radio buttons...
-    el = $(e.target)
-    if el.attr('name') == 'Capture'
-      otherEl = $("[name='Body Carve']")
-      if otherEl.is(':checked')
-        otherEl.prop('checked', false)
-      else
-        otherEl.prop('checked', true)
-    else if el.attr('name') == 'Body Carve'
-      otherEl = $("[name='Capture']")
-      if otherEl.is(':checked')
-        otherEl.prop('checked', false)
-      else
-        otherEl.prop('checked', true)
+    # if el.attr('name') == 'Capture'
+    #   otherEl = $("[name='Body Carve']")
+    #   if otherEl.is(':checked')
+    #     otherEl.prop('checked', false)
+    #   else
+    #     otherEl.prop('checked', true)
+    # else if el.attr('name') == 'Body Carve'
+    #   otherEl = $("[name='Capture']")
+    #   if otherEl.is(':checked')
+    #     otherEl.prop('checked', false)
+    #   else
+    #     otherEl.prop('checked', true)
 
   toggleDropTable: (e) =>
     container    = @container($(e.target))

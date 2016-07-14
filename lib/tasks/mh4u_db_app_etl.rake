@@ -61,10 +61,10 @@ quest_groups_lookup = {}
 break_drop_instances = []
 quest_drop_instances = []
 
-MonsterSet.create(id: 1, name: "Monster Hunter 4 Ultimate", url: 'mh4u', enabled: true, default: true)
-Rank.create(id: 1, monster_set_id: 1, name: "Low")
-Rank.create(id: 2, monster_set_id: 1, name: "High")
-Rank.create(id: 3, monster_set_id: 1, name: "G")
+MonsterSet.create(id: 2, name: "Monster Hunter 4 Ultimate", url: 'mh4u', enabled: true, default: false)
+Rank.create(id: 1, monster_set_id: 2, name: "Low")
+Rank.create(id: 2, monster_set_id: 2, name: "High")
+Rank.create(id: 3, monster_set_id: 2, name: "G")
       EOF
 
       monsters_count = 0

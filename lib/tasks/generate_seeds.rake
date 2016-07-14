@@ -1,5 +1,5 @@
 namespace :db do
-  task :generate_seeds => ["clear_seeds", "mh3u:generate_seeds", "mh4u:generate_seeds"] do
+  task :generate_seeds => ["clear_seeds", "mh3u:generate_seeds", "mh4u:generate_seeds", "mhgen:generate_seeds"] do
   end
 
   task :clear_seeds do
