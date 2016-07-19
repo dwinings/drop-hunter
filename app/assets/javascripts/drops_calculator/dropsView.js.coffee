@@ -6,6 +6,10 @@ class desire.DropsView
       else
         options.inverse(@)
 
+    Handlebars.registerHelper 'formatDropQuantity', (qty) ->
+      return '' if qty <= 1 || qty == null || qty == undefined
+      return " (x#{qty})"
+
     @template  = HandlebarsTemplates['drops_calculator/drop_list']
     @context = {}
     @loaded = false

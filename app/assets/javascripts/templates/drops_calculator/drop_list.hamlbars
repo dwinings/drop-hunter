@@ -25,5 +25,6 @@
                   %tr
                     %td
                       = hb 'name'
+                      = hb 'formatDropQuantity quantity'
                     %td{style: 'text-align: center;'}
                       = hb 'formatPercent probability'
